@@ -48,7 +48,7 @@
         tools:text="9/27/2017" />
 
     <me.zhanghai.android.materialratingbar.MaterialRatingBar
-        android:id="@+id/ratingbar"
+        android:id="@+id/ratingbar_rating_dialog"
         style="@style/Widget.MaterialRatingBar.RatingBar.Indicator.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -41,7 +41,7 @@ public class RatingAdapter extends FirestoreAdapter<RatingAdapter.ViewHolder> {
         public ViewHolder(View itemView) {
             super(itemView);
             tvName = itemView.findViewById(R.id.tv_rating_name);
-            ratingBar = itemView.findViewById(R.id.ratingbar);
+            ratingBar = itemView.findViewById(R.id.ratingbar_rating_dialog);
             tvContent = itemView.findViewById(R.id.tv_rating_content);
         }
 

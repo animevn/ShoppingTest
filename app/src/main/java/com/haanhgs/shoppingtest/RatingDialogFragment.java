@@ -1,6 +1,8 @@
 package com.haanhgs.shoppingtest;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,38 +13,32 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.haanhgs.shoppingtest.model.Rating;
-
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
-
 
 public class RatingDialogFragment extends DialogFragment implements View.OnClickListener {
 
     public static final String TAG = "RatingDialog";
 
-    private MaterialRatingBar mRatingBar;
-    private EditText mRatingText;
+    private MaterialRatingBar ratingBar;
+    private EditText tvContent;
 
     interface RatingListener {
-
         void onRating(Rating rating);
-
     }
 
-    private RatingListener mRatingListener;
+    private RatingListener ratingListener;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.dialog_rating, container, false);
-        mRatingBar = v.findViewById(R.id.restaurant_form_rating);
-        mRatingText = v.findViewById(R.id.restaurant_form_text);
-
-        v.findViewById(R.id.restaurant_form_button).setOnClickListener(this);
-        v.findViewById(R.id.restaurant_form_cancel).setOnClickListener(this);
-
-        return v;
+        View view = inflater.inflate(R.layout.dialog_rating1, container, false);
+        ratingBar = view.findViewById(R.id.ratingbar_rating_dialog);
+        tvContent = view.findViewById(R.id.tv_rating_dialog_content);
+        view.findViewById(R.id.bn_rating_dialog_submit).setOnClickListener(this);
+        view.findViewById(R.id.bn_rating_dialog_cancel).setOnClickListener(this);
+        return view;
     }
 
     @Override
@@ -50,7 +46,7 @@ public class RatingDialogFragment extends DialogFragment implements View.OnClick
         super.onAttach(context);
 
         if (context instanceof RatingListener) {
-            mRatingListener = (RatingListener) context;
+            ratingListener = (RatingListener) context;
         }
     }
 
@@ -58,20 +54,23 @@ public class RatingDialogFragment extends DialogFragment implements View.OnClick
     public void onResume() {
         super.onResume();
         if (getDialog() != null && getDialog().getWindow() != null){
-            getDialog().getWindow().setLayout(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         }
+//        if (getDialog() != null && getDialog().getWindow() != null){
+//            getDialog().getWindow().setLayout(
+//                    ViewGroup.LayoutParams.MATCH_PARENT,
+//                    ViewGroup.LayoutParams.WRAP_CONTENT);
+//        }
 
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.restaurant_form_button:
+            case R.id.bn_rating_dialog_submit:
                 onSubmitClicked(v);
                 break;
-            case R.id.restaurant_form_cancel:
+            case R.id.bn_rating_dialog_cancel:
                 onCancelClicked(v);
                 break;
         }
@@ -81,10 +80,10 @@ public class RatingDialogFragment extends DialogFragment implements View.OnClick
         if (FirebaseAuth.getInstance().getCurrentUser() != null){
             Rating rating = new Rating(
                     FirebaseAuth.getInstance().getCurrentUser(),
-                    mRatingBar.getRating(),
-                    mRatingText.getText().toString());
-            if (mRatingListener != null) {
-                mRatingListener.onRating(rating);
+                    ratingBar.getRating(),
+                    tvContent.getText().toString());
+            if (ratingListener != null) {
+                ratingListener.onRating(rating);
             }
             dismiss();
         }
