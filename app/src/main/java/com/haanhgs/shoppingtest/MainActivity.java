@@ -8,10 +8,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -52,6 +55,29 @@ public class MainActivity extends AppCompatActivity implements
     private FilterDialogFragment mFilterDialog;
     private RestaurantAdapter mAdapter;
     private MainActivityViewModel mViewModel;
+
+    public void showBackArrowToolbar(){
+        //show back arrow in toolbar
+        if (getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    public void hideBackArrowToolbar(){
+        if (getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        }
+    }
+
+    public void clickBackArrowToReturn(){
+        //if click back arrow, then will just like click back button
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -261,8 +287,20 @@ public class MainActivity extends AppCompatActivity implements
         // Go to the details page for the selected restaurant
         Intent intent = new Intent(this, RestaurantDetailActivity.class);
         intent.putExtra(RestaurantDetailActivity.KEY_RESTAURANT_ID, restaurant.getId());
-
         startActivity(intent);
+
+//        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//        Fragment detail = getSupportFragmentManager().findFragmentByTag("restaurantDetail");
+//        if (detail == null){
+//            RestaurantDetaiFragment fragment = new RestaurantDetaiFragment();
+//            fragment.setRestaurantId(restaurant.getId());
+//            ft.replace(R.id.flMain, fragment, "restaurantDetail");
+//            ft.addToBackStack("restaurantDetail");
+//            ft.commit();
+//        }else {
+//            ft.attach(detail);
+//        }
+
     }
 
     private boolean shouldStartSignIn() {

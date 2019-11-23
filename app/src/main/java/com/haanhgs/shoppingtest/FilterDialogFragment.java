@@ -68,7 +68,6 @@ import com.haanhgs.shoppingtest.repo.Filters;
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT);
         }
-
     }
 
     @Override

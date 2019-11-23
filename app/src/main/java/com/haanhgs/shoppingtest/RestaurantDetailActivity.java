@@ -29,7 +29,6 @@ import com.haanhgs.shoppingtest.adapter.RatingAdapter;
 import com.haanhgs.shoppingtest.model.Rating;
 import com.haanhgs.shoppingtest.model.Restaurant;
 import com.haanhgs.shoppingtest.repo.RestaurantUtil;
-
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 
 public class RestaurantDetailActivity extends AppCompatActivity implements
@@ -38,39 +37,36 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
         RatingDialogFragment.RatingListener {
 
     private static final String TAG = "RestaurantDetail";
-
     public static final String KEY_RESTAURANT_ID = "key_restaurant_id";
-
-    private ImageView mImageView;
-    private TextView mNameView;
-    private MaterialRatingBar mRatingIndicator;
-    private TextView mNumRatingsView;
-    private TextView mCityView;
-    private TextView mCategoryView;
-    private TextView mPriceView;
-    private ViewGroup mEmptyView;
-    private RecyclerView mRatingsRecycler;
-    private RatingDialogFragment mRatingDialog;
-    private FirebaseFirestore mFirestore;
-    private DocumentReference mRestaurantRef;
-    private ListenerRegistration mRestaurantRegistration;
-
-    private RatingAdapter mRatingAdapter;
+    private ImageView imageView;
+    private TextView nameView;
+    private MaterialRatingBar ratingIndicator;
+    private TextView numRatingsView;
+    private TextView cityView;
+    private TextView categoryView;
+    private TextView priceView;
+    private ViewGroup emptyView;
+    private RecyclerView ratingsRecycler;
+    private RatingDialogFragment ratingDialog;
+    private FirebaseFirestore firestore;
+    private DocumentReference restaurantRef;
+    private ListenerRegistration restaurantRegistration;
+    private RatingAdapter ratingAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant_detail);
         
-        mImageView = findViewById(R.id.restaurant_image);
-        mNameView = findViewById(R.id.restaurant_name);
-        mRatingIndicator = findViewById(R.id.restaurant_rating);
-        mNumRatingsView = findViewById(R.id.restaurant_num_ratings);
-        mCityView = findViewById(R.id.restaurant_city);
-        mCategoryView = findViewById(R.id.restaurant_category);
-        mPriceView = findViewById(R.id.restaurant_price);
-        mEmptyView = findViewById(R.id.view_empty_ratings);
-        mRatingsRecycler = findViewById(R.id.recycler_ratings);
+        imageView = findViewById(R.id.restaurant_image);
+        nameView = findViewById(R.id.restaurant_name);
+        ratingIndicator = findViewById(R.id.restaurant_rating);
+        numRatingsView = findViewById(R.id.restaurant_num_ratings);
+        cityView = findViewById(R.id.restaurant_city);
+        categoryView = findViewById(R.id.restaurant_category);
+        priceView = findViewById(R.id.restaurant_price);
+        emptyView = findViewById(R.id.view_empty_ratings);
+        ratingsRecycler = findViewById(R.id.recycler_ratings);
 
         findViewById(R.id.restaurant_button_back).setOnClickListener(this);
         findViewById(R.id.fab_show_rating_dialog).setOnClickListener(this);
@@ -82,54 +78,54 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
         }
 
         // Initialize Firestore
-        mFirestore = FirebaseFirestore.getInstance();
+        firestore = FirebaseFirestore.getInstance();
 
         // Get reference to the restaurant
-        mRestaurantRef = mFirestore.collection("restaurants").document(restaurantId);
+        restaurantRef = firestore.collection("restaurants").document(restaurantId);
 
         // Get ratings
-        Query ratingsQuery = mRestaurantRef
+        Query ratingsQuery = restaurantRef
                 .collection("ratings")
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .limit(50);
 
         // RecyclerView
-        mRatingAdapter = new RatingAdapter(ratingsQuery) {
+        ratingAdapter = new RatingAdapter(ratingsQuery) {
             @Override
             protected void onDataChanged() {
                 if (getItemCount() == 0) {
-                    mRatingsRecycler.setVisibility(View.GONE);
-                    mEmptyView.setVisibility(View.VISIBLE);
+                    ratingsRecycler.setVisibility(View.GONE);
+                    emptyView.setVisibility(View.VISIBLE);
                 } else {
-                    mRatingsRecycler.setVisibility(View.VISIBLE);
-                    mEmptyView.setVisibility(View.GONE);
+                    ratingsRecycler.setVisibility(View.VISIBLE);
+                    emptyView.setVisibility(View.GONE);
                 }
             }
         };
 
-        mRatingsRecycler.setLayoutManager(new LinearLayoutManager(this));
-        mRatingsRecycler.setAdapter(mRatingAdapter);
+        ratingsRecycler.setLayoutManager(new LinearLayoutManager(this));
+        ratingsRecycler.setAdapter(ratingAdapter);
 
-        mRatingDialog = new RatingDialogFragment();
+        ratingDialog = new RatingDialogFragment();
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        mRatingAdapter.startListening();
-        mRestaurantRegistration = mRestaurantRef.addSnapshotListener(this);
+        ratingAdapter.startListening();
+        restaurantRegistration = restaurantRef.addSnapshotListener(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        mRatingAdapter.stopListening();
+        ratingAdapter.stopListening();
 
-        if (mRestaurantRegistration != null) {
-            mRestaurantRegistration.remove();
-            mRestaurantRegistration = null;
+        if (restaurantRegistration != null) {
+            restaurantRegistration.remove();
+            restaurantRegistration = null;
         }
     }
 
@@ -151,9 +147,9 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
                 .document();
 
         // In a transaction, add the new rating and update the aggregate totals
-        return mFirestore.runTransaction(new Transaction.Function<Void>() {
+        return firestore.runTransaction(new Transaction.Function<Void>() {
             @Override
-            public Void apply(Transaction transaction)
+            public Void apply(@NonNull Transaction transaction)
                     throws FirebaseFirestoreException {
 
                 Restaurant restaurant = transaction.get(restaurantRef)
@@ -182,9 +178,6 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
 
     }
 
-    /**
-     * Listener for the Restaurant document ({@link #mRestaurantRef}).
-     */
     @Override
     public void onEvent(DocumentSnapshot snapshot, FirebaseFirestoreException e) {
         if (e != null) {
@@ -196,17 +189,17 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
     }
 
     private void onRestaurantLoaded(Restaurant restaurant) {
-        mNameView.setText(restaurant.getName());
-        mRatingIndicator.setRating((float) restaurant.getAvgRating());
-        mNumRatingsView.setText(getString(R.string.fmt_num_ratings, restaurant.getNumRatings()));
-        mCityView.setText(restaurant.getCity());
-        mCategoryView.setText(restaurant.getCategory());
-        mPriceView.setText(RestaurantUtil.getPriceString(restaurant));
+        nameView.setText(restaurant.getName());
+        ratingIndicator.setRating((float) restaurant.getAvgRating());
+        numRatingsView.setText(getString(R.string.fmt_num_ratings, restaurant.getNumRatings()));
+        cityView.setText(restaurant.getCity());
+        categoryView.setText(restaurant.getCategory());
+        priceView.setText(RestaurantUtil.getPriceString(restaurant));
 
         // Background image
-        Glide.with(mImageView.getContext())
+        Glide.with(imageView.getContext())
                 .load(restaurant.getPhoto())
-                .into(mImageView);
+                .into(imageView);
     }
 
     public void onBackArrowClicked(View view) {
@@ -214,21 +207,19 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
     }
 
     public void onAddRatingClicked(View view) {
-        mRatingDialog.show(getSupportFragmentManager(), RatingDialogFragment.TAG);
+        ratingDialog.show(getSupportFragmentManager(), RatingDialogFragment.TAG);
     }
 
     @Override
     public void onRating(Rating rating) {
-        // In a transaction, add the new rating and update the aggregate totals
-        addRating(mRestaurantRef, rating)
+        addRating(restaurantRef, rating)
                 .addOnSuccessListener(this, new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "Rating added");
 
-                        // Hide keyboard and scroll to top
                         hideKeyboard();
-                        mRatingsRecycler.smoothScrollToPosition(0);
+                        ratingsRecycler.smoothScrollToPosition(0);
                     }
                 })
                 .addOnFailureListener(this, new OnFailureListener() {
@@ -236,7 +227,6 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Add rating failed", e);
 
-                        // Show failure message and hide keyboard
                         hideKeyboard();
                         Snackbar.make(findViewById(android.R.id.content), "Failed to add rating",
                                 Snackbar.LENGTH_SHORT).show();
