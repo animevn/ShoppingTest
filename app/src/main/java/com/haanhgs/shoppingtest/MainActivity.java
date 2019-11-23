@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements
         FilterDialogFragment.FilterListener,
         RestaurantAdapter.OnRestaurantSelectedListener {
 
-    public static final int LIMIT = 500;
+    public static final int LIMIT = 50;
     private static final String TAG = "MainActivity";
     private static final int RC_SIGN_IN = 9001;
     private Toolbar toolbar;
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements
     private FilterDialogFragment filterDialog;
     private RestaurantAdapter adapter;
     private MainActivityViewModel viewModel;
+    private FirebaseUser user;
 
     private void initToolbar(){
         toolbar = findViewById(R.id.tbr_main);
@@ -67,7 +69,9 @@ public class MainActivity extends AppCompatActivity implements
 
     private void initFirestore() {
         firestore = FirebaseFirestore.getInstance();
-        query = firestore.collection("restaurants")
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        query = firestore.collection("app")
+                .document(user.getUid()).collection("test")
                 .orderBy("avgRating", Query.Direction.DESCENDING)
                 .limit(LIMIT);
     }
@@ -124,6 +128,8 @@ public class MainActivity extends AppCompatActivity implements
         filterDialog = new FilterDialogFragment();
     }
 
+
+
     private boolean shouldStartSignIn() {
         return (!viewModel.getIsSigningIn() && FirebaseAuth.getInstance().getCurrentUser() == null);
     }
@@ -177,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private void onAddItemsClicked() {
         // Get a reference to the restaurants collection
-        CollectionReference restaurants = firestore.collection("restaurants");
+        CollectionReference restaurants = firestore.collection("app").document(user.getUid()).collection("test");
         for (int i = 0; i < 10; i++) {
             // Get a random Restaurant POJO
             Restaurant restaurant = RestaurantRepo.getRandom(this);
@@ -189,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onFilter(Filters filters) {
         // Construct query basic query
-        Query query = firestore.collection("restaurants");
+        Query query = firestore.collection("app").document(user.getUid()).collection("test");
         // Category (equality filter)
         if (filters.hasCategory()) {
             query = query.whereEqualTo("category", filters.getCategory());
@@ -233,6 +239,7 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.menu_sign_out:
                 AuthUI.getInstance().signOut(this);
                 startSignIn();
+
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -264,6 +271,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onRestaurantSelected(DocumentSnapshot restaurant) {
         Intent intent = new Intent(this, RestaurantDetailActivity.class);
         intent.putExtra(RestaurantDetailActivity.KEY_RESTAURANT_ID, restaurant.getId());
+        intent.putExtra(RestaurantDetailActivity.KEY_USER_ID, user.getUid());
         startActivity(intent);
     }
 }

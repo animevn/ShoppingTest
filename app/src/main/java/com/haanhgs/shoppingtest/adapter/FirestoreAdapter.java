@@ -94,8 +94,6 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
         }
 
         onDataChanged();
-
-
     }
 
     protected void onDocumentAdded(DocumentChange change) {

@@ -38,6 +38,7 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
 
     private static final String TAG = "RestaurantDetail";
     public static final String KEY_RESTAURANT_ID = "key_restaurant_id";
+    public static final String KEY_USER_ID = "key_user_id";
     private ImageView imageView;
     private TextView nameView;
     private MaterialRatingBar ratingIndicator;
@@ -89,10 +90,12 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
 
         // Get restaurant ID from extras
         String restaurantId = null;
+        String uId = null;
         if (getIntent().getExtras() != null){
             restaurantId = getIntent().getExtras().getString(KEY_RESTAURANT_ID);
+            uId = getIntent().getExtras().getString(KEY_USER_ID);
         }
-        if (restaurantId == null) {
+        if (restaurantId == null || uId == null) {
             onBackPressed();
             throw new IllegalArgumentException("Must pass extra " + KEY_RESTAURANT_ID);
         }
@@ -100,7 +103,7 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
         firestore = FirebaseFirestore.getInstance();
 
         // Get reference to the restaurant
-        restaurantRef = firestore.collection("restaurants").document(restaurantId);
+        restaurantRef = firestore.collection("app").document(uId).collection("test").document(restaurantId);
 
         // Get ratings
         Query ratingsQuery = restaurantRef
