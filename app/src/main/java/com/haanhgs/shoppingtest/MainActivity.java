@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private static final String TAG = "MainActivity";
     private static final int RC_SIGN_IN = 9001;
-    private static final int LIMIT = 50;
+    private static final int LIMIT = 500;
 
     private Toolbar toolbar;
     private TextView currentSearchView;
@@ -49,29 +49,6 @@ public class MainActivity extends AppCompatActivity implements
     private FilterDialogFragment filterDialog;
     private RestaurantAdapter adapter;
     private MainActivityViewModel viewModel;
-
-    public void showBackArrowToolbar(){
-        //show back arrow in toolbar
-        if (getSupportActionBar() != null){
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-    }
-
-    public void hideBackArrowToolbar(){
-        if (getSupportActionBar() != null){
-            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        }
-    }
-
-    public void clickBackArrowToReturn(){
-        //if click back arrow, then will just like click back button
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
