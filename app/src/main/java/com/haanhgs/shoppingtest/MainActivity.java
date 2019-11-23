@@ -8,13 +8,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,7 +28,6 @@ import com.haanhgs.shoppingtest.model.Restaurant;
 import com.haanhgs.shoppingtest.repo.Filters;
 import com.haanhgs.shoppingtest.repo.RestaurantUtil;
 import com.haanhgs.shoppingtest.viewmodel.MainActivityViewModel;
-
 import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity implements
@@ -40,21 +36,19 @@ public class MainActivity extends AppCompatActivity implements
         RestaurantAdapter.OnRestaurantSelectedListener {
 
     private static final String TAG = "MainActivity";
-
     private static final int RC_SIGN_IN = 9001;
-
     private static final int LIMIT = 50;
 
-    private Toolbar mToolbar;
-    private TextView mCurrentSearchView;
-    private TextView mCurrentSortByView;
-    private RecyclerView mRestaurantsRecycler;
-    private ViewGroup mEmptyView;
-    private FirebaseFirestore mFirestore;
-    private Query mQuery;
-    private FilterDialogFragment mFilterDialog;
-    private RestaurantAdapter mAdapter;
-    private MainActivityViewModel mViewModel;
+    private Toolbar toolbar;
+    private TextView currentSearchView;
+    private TextView currentSortByView;
+    private RecyclerView restaurantsRecycler;
+    private ViewGroup emptyView;
+    private FirebaseFirestore firestore;
+    private Query query;
+    private FilterDialogFragment filterDialog;
+    private RestaurantAdapter adapter;
+    private MainActivityViewModel viewModel;
 
     public void showBackArrowToolbar(){
         //show back arrow in toolbar
@@ -71,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements
 
     public void clickBackArrowToReturn(){
         //if click back arrow, then will just like click back button
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
@@ -84,19 +78,19 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mToolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        mCurrentSearchView = findViewById(R.id.text_current_search);
-        mCurrentSortByView = findViewById(R.id.text_current_sort_by);
-        mRestaurantsRecycler = findViewById(R.id.recycler_restaurants);
-        mEmptyView = findViewById(R.id.view_empty);
+        currentSearchView = findViewById(R.id.text_current_search);
+        currentSortByView = findViewById(R.id.text_current_sort_by);
+        restaurantsRecycler = findViewById(R.id.recycler_restaurants);
+        emptyView = findViewById(R.id.view_empty);
 
         findViewById(R.id.filter_bar).setOnClickListener(this);
         findViewById(R.id.button_clear_filter).setOnClickListener(this);
 
         // View model
-        mViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
 
         // Enable Firestore logging
         FirebaseFirestore.setLoggingEnabled(true);
@@ -106,33 +100,32 @@ public class MainActivity extends AppCompatActivity implements
         initRecyclerView();
 
         // Filter Dialog
-        mFilterDialog = new FilterDialogFragment();
+        filterDialog = new FilterDialogFragment();
     }
 
     private void initFirestore() {
-        mFirestore = FirebaseFirestore.getInstance();
-
-        mQuery = mFirestore.collection("restaurants")
+        firestore = FirebaseFirestore.getInstance();
+        query = firestore.collection("restaurants")
                 .orderBy("avgRating", Query.Direction.DESCENDING)
                 .limit(LIMIT);
     }
 
     private void initRecyclerView() {
-        if (mQuery == null) {
+        if (query == null) {
             Log.w(TAG, "No query, not initializing RecyclerView");
         }
 
-        mAdapter = new RestaurantAdapter(mQuery, this) {
+        adapter = new RestaurantAdapter(query, this) {
 
             @Override
             protected void onDataChanged() {
                 // Show/hide content if the query returns empty.
                 if (getItemCount() == 0) {
-                    mRestaurantsRecycler.setVisibility(View.GONE);
-                    mEmptyView.setVisibility(View.VISIBLE);
+                    restaurantsRecycler.setVisibility(View.GONE);
+                    emptyView.setVisibility(View.VISIBLE);
                 } else {
-                    mRestaurantsRecycler.setVisibility(View.VISIBLE);
-                    mEmptyView.setVisibility(View.GONE);
+                    restaurantsRecycler.setVisibility(View.VISIBLE);
+                    emptyView.setVisibility(View.GONE);
                 }
             }
 
@@ -144,8 +137,8 @@ public class MainActivity extends AppCompatActivity implements
             }
         };
 
-        mRestaurantsRecycler.setLayoutManager(new LinearLayoutManager(this));
-        mRestaurantsRecycler.setAdapter(mAdapter);
+        restaurantsRecycler.setLayoutManager(new LinearLayoutManager(this));
+        restaurantsRecycler.setAdapter(adapter);
     }
 
     @Override
@@ -159,25 +152,25 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         // Apply filters
-        onFilter(mViewModel.getFilters());
+        onFilter(viewModel.getFilters());
 
         // Start listening for Firestore updates
-        if (mAdapter != null) {
-            mAdapter.startListening();
+        if (adapter != null) {
+            adapter.startListening();
         }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (mAdapter != null) {
-            mAdapter.stopListening();
+        if (adapter != null) {
+            adapter.stopListening();
         }
     }
 
     private void onAddItemsClicked() {
         // Get a reference to the restaurants collection
-        CollectionReference restaurants = mFirestore.collection("restaurants");
+        CollectionReference restaurants = firestore.collection("restaurants");
 
         for (int i = 0; i < 10; i++) {
             // Get a random Restaurant POJO
@@ -191,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onFilter(Filters filters) {
         // Construct query basic query
-        Query query = mFirestore.collection("restaurants");
+        Query query = firestore.collection("restaurants");
 
         // Category (equality filter)
         if (filters.hasCategory()) {
@@ -217,15 +210,15 @@ public class MainActivity extends AppCompatActivity implements
         query = query.limit(LIMIT);
 
         // Update the query
-        mQuery = query;
-        mAdapter.setQuery(query);
+        this.query = query;
+        adapter.setQuery(query);
 
         // Set header
-        mCurrentSearchView.setText(Html.fromHtml(filters.getSearchDescription(this)));
-        mCurrentSortByView.setText(filters.getOrderDescription(this));
+        currentSearchView.setText(Html.fromHtml(filters.getSearchDescription(this)));
+        currentSortByView.setText(filters.getOrderDescription(this));
 
         // Save filters
-        mViewModel.setFilters(filters);
+        viewModel.setFilters(filters);
     }
 
     @Override
@@ -252,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_SIGN_IN) {
-            mViewModel.setIsSigningIn(false);
+            viewModel.setIsSigningIn(false);
 
             if (resultCode != RESULT_OK && shouldStartSignIn()) {
                 startSignIn();
@@ -273,22 +266,20 @@ public class MainActivity extends AppCompatActivity implements
 
     public void onFilterClicked() {
         // Show the dialog containing filter options
-        mFilterDialog.show(getSupportFragmentManager(), FilterDialogFragment.TAG);
+        filterDialog.show(getSupportFragmentManager(), FilterDialogFragment.TAG);
     }
 
     public void onClearFilterClicked() {
-        mFilterDialog.resetFilters();
+        filterDialog.resetFilters();
 
         onFilter(Filters.getDefault());
     }
 
     @Override
     public void onRestaurantSelected(DocumentSnapshot restaurant) {
-        // Go to the details page for the selected restaurant
         Intent intent = new Intent(this, RestaurantDetailActivity.class);
         intent.putExtra(RestaurantDetailActivity.KEY_RESTAURANT_ID, restaurant.getId());
         startActivity(intent);
-
 //        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 //        Fragment detail = getSupportFragmentManager().findFragmentByTag("restaurantDetail");
 //        if (detail == null){
@@ -304,7 +295,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private boolean shouldStartSignIn() {
-        return (!mViewModel.getIsSigningIn() && FirebaseAuth.getInstance().getCurrentUser() == null);
+        return (!viewModel.getIsSigningIn() && FirebaseAuth.getInstance().getCurrentUser() == null);
     }
 
     private void startSignIn() {
@@ -316,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements
                 .build();
 
         startActivityForResult(intent, RC_SIGN_IN);
-        mViewModel.setIsSigningIn(true);
+        viewModel.setIsSigningIn(true);
     }
 
     private void showTodoToast() {

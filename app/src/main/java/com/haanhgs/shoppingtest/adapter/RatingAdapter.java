@@ -4,18 +4,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.firestore.Query;
 import com.haanhgs.shoppingtest.R;
 import com.haanhgs.shoppingtest.model.Rating;
-
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 
-/**
- * RecyclerView adapter for a bunch of Ratings.
- */
 public class RatingAdapter extends FirestoreAdapter<RatingAdapter.ViewHolder> {
 
     public RatingAdapter(Query query) {

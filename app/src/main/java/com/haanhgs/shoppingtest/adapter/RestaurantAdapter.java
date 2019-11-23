@@ -14,18 +14,13 @@ import com.google.firebase.firestore.Query;
 import com.haanhgs.shoppingtest.R;
 import com.haanhgs.shoppingtest.model.Restaurant;
 import com.haanhgs.shoppingtest.repo.RestaurantUtil;
-
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 
-/**
- * RecyclerView adapter for a list of Restaurants.
- */
+
 public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHolder> {
 
     public interface OnRestaurantSelectedListener {
-
         void onRestaurantSelected(DocumentSnapshot restaurant);
-
     }
 
     private OnRestaurantSelectedListener mListener;
@@ -73,20 +68,19 @@ public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHo
 
             Restaurant restaurant = snapshot.toObject(Restaurant.class);
             Resources resources = itemView.getResources();
-
-            // Load image
-            Glide.with(imageView.getContext())
-                    .load(restaurant.getPhoto())
-                    .into(imageView);
-
-            nameView.setText(restaurant.getName());
-            ratingBar.setRating((float) restaurant.getAvgRating());
-            cityView.setText(restaurant.getCity());
-            categoryView.setText(restaurant.getCategory());
-            numRatingsView.setText(resources.getString(R.string.fmt_num_ratings,
-                    restaurant.getNumRatings()));
-            priceView.setText(RestaurantUtil.getPriceString(restaurant));
-
+            if (restaurant != null){
+                // Load image
+                Glide.with(imageView.getContext())
+                        .load(restaurant.getPhoto())
+                        .into(imageView);
+                nameView.setText(restaurant.getName());
+                ratingBar.setRating((float) restaurant.getAvgRating());
+                cityView.setText(restaurant.getCity());
+                categoryView.setText(restaurant.getCategory());
+                numRatingsView.setText(resources.getString(R.string.fmt_num_ratings,
+                        restaurant.getNumRatings()));
+                priceView.setText(RestaurantUtil.getPriceString(restaurant));
+            }
             // Click listener
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -97,6 +91,5 @@ public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHo
                 }
             });
         }
-
     }
 }

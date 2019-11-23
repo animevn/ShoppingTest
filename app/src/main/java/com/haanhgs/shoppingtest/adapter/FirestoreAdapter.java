@@ -1,9 +1,7 @@
  package com.haanhgs.shoppingtest.adapter;
 
 import android.util.Log;
-
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -17,29 +15,26 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<VH> implements EventListener<QuerySnapshot> {
 
     private static final String TAG = "Firestore Adapter";
-
-    private Query mQuery;
-    private ListenerRegistration mRegistration;
-
-    private ArrayList<DocumentSnapshot> mSnapshots = new ArrayList<>();
-
+    private Query query;
+    private ListenerRegistration registration;
+    private ArrayList<DocumentSnapshot> snapshots = new ArrayList<>();
     public FirestoreAdapter(Query query) {
-        mQuery = query;
+        this.query = query;
     }
 
     public void startListening() {
-        if (mQuery != null && mRegistration == null) {
-            mRegistration = mQuery.addSnapshotListener(this);
+        if (query != null && registration == null) {
+            registration = query.addSnapshotListener(this);
         }
     }
 
     public void stopListening() {
-        if (mRegistration != null) {
-            mRegistration.remove();
-            mRegistration = null;
+        if (registration != null) {
+            registration.remove();
+            registration = null;
         }
 
-        mSnapshots.clear();
+        snapshots.clear();
         notifyDataSetChanged();
     }
 
@@ -48,21 +43,21 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
         stopListening();
 
         // Clear existing data
-        mSnapshots.clear();
+        snapshots.clear();
         notifyDataSetChanged();
 
         // Listen to new query
-        mQuery = query;
+        this.query = query;
         startListening();
     }
 
     @Override
     public int getItemCount() {
-        return mSnapshots.size();
+        return snapshots.size();
     }
 
     protected DocumentSnapshot getSnapshot(int index) {
-        return mSnapshots.get(index);
+        return snapshots.get(index);
     }
 
     protected void onError(FirebaseFirestoreException e) {}
@@ -103,25 +98,25 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
     }
 
     protected void onDocumentAdded(DocumentChange change) {
-        mSnapshots.add(change.getNewIndex(), change.getDocument());
+        snapshots.add(change.getNewIndex(), change.getDocument());
         notifyItemInserted(change.getNewIndex());
     }
 
     protected void onDocumentModified(DocumentChange change) {
         if (change.getOldIndex() == change.getNewIndex()) {
             // Item changed but remained in same position
-            mSnapshots.set(change.getOldIndex(), change.getDocument());
+            snapshots.set(change.getOldIndex(), change.getDocument());
             notifyItemChanged(change.getOldIndex());
         } else {
             // Item changed and changed position
-            mSnapshots.remove(change.getOldIndex());
-            mSnapshots.add(change.getNewIndex(), change.getDocument());
+            snapshots.remove(change.getOldIndex());
+            snapshots.add(change.getNewIndex(), change.getDocument());
             notifyItemMoved(change.getOldIndex(), change.getNewIndex());
         }
     }
 
     protected void onDocumentRemoved(DocumentChange change) {
-        mSnapshots.remove(change.getOldIndex());
+        snapshots.remove(change.getOldIndex());
         notifyItemRemoved(change.getOldIndex());
     }
 
