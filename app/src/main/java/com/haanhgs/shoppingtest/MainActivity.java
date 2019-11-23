@@ -78,16 +78,16 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.tbr_main);
         setSupportActionBar(toolbar);
 
-        currentSearchView = findViewById(R.id.text_current_search);
-        currentSortByView = findViewById(R.id.text_current_sort_by);
-        restaurantsRecycler = findViewById(R.id.recycler_restaurants);
-        emptyView = findViewById(R.id.view_empty);
+        currentSearchView = findViewById(R.id.tv_current_filter);
+        currentSortByView = findViewById(R.id.tv_current_sort_by);
+        restaurantsRecycler = findViewById(R.id.rv_main);
+        emptyView = findViewById(R.id.cl_empty);
 
-        findViewById(R.id.filter_bar).setOnClickListener(this);
-        findViewById(R.id.button_clear_filter).setOnClickListener(this);
+        findViewById(R.id.cv_bar).setOnClickListener(this);
+        findViewById(R.id.bn_clear_filter).setOnClickListener(this);
 
         // View model
         viewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
@@ -256,10 +256,10 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.filter_bar:
+            case R.id.cv_bar:
                 onFilterClicked();
                 break;
-            case R.id.button_clear_filter:
+            case R.id.bn_clear_filter:
                 onClearFilterClicked();
         }
     }
@@ -280,18 +280,6 @@ public class MainActivity extends AppCompatActivity implements
         Intent intent = new Intent(this, RestaurantDetailActivity.class);
         intent.putExtra(RestaurantDetailActivity.KEY_RESTAURANT_ID, restaurant.getId());
         startActivity(intent);
-//        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-//        Fragment detail = getSupportFragmentManager().findFragmentByTag("restaurantDetail");
-//        if (detail == null){
-//            RestaurantDetaiFragment fragment = new RestaurantDetaiFragment();
-//            fragment.setRestaurantId(restaurant.getId());
-//            ft.replace(R.id.flMain, fragment, "restaurantDetail");
-//            ft.addToBackStack("restaurantDetail");
-//            ft.commit();
-//        }else {
-//            ft.attach(detail);
-//        }
-
     }
 
     private boolean shouldStartSignIn() {

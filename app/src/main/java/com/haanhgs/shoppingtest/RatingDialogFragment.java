@@ -33,7 +33,7 @@ public class RatingDialogFragment extends DialogFragment implements View.OnClick
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.dialog_rating1, container, false);
+        View view = inflater.inflate(R.layout.dialog_rating, container, false);
         ratingBar = view.findViewById(R.id.ratingbar_rating_dialog);
         tvContent = view.findViewById(R.id.tv_rating_dialog_content);
         view.findViewById(R.id.bn_rating_dialog_submit).setOnClickListener(this);
