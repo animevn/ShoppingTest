@@ -17,7 +17,7 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
     private static final String TAG = "Firestore Adapter";
     private Query query;
     private ListenerRegistration registration;
-    private ArrayList<DocumentSnapshot> snapshots = new ArrayList<>();
+    private final ArrayList<DocumentSnapshot> snapshots = new ArrayList<>();
 
     public FirestoreAdapter(Query query) {
         this.query = query;

@@ -9,7 +9,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProviders;
@@ -35,13 +34,12 @@ public class MainActivity extends AppCompatActivity implements
         FilterDialogFragment.FilterListener,
         RestaurantAdapter.OnRestaurantSelectedListener {
 
+    public static final int LIMIT = 500;
     private static final String TAG = "MainActivity";
     private static final int RC_SIGN_IN = 9001;
-    private static final int LIMIT = 500;
-
     private Toolbar toolbar;
-    private TextView currentSearchView;
-    private TextView currentSortByView;
+    private TextView tvCurrentSearch;
+    private TextView tvCurrentSort;
     private RecyclerView restaurantsRecycler;
     private ViewGroup emptyView;
     private FirebaseFirestore firestore;
@@ -50,34 +48,21 @@ public class MainActivity extends AppCompatActivity implements
     private RestaurantAdapter adapter;
     private MainActivityViewModel viewModel;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
+    private void initToolbar(){
         toolbar = findViewById(R.id.tbr_main);
         setSupportActionBar(toolbar);
+    }
 
-        currentSearchView = findViewById(R.id.tv_current_filter);
-        currentSortByView = findViewById(R.id.tv_current_sort_by);
+    private void initViews(){
+        tvCurrentSearch = findViewById(R.id.tv_current_filter);
+        tvCurrentSort = findViewById(R.id.tv_current_sort_by);
         restaurantsRecycler = findViewById(R.id.rv_main);
         emptyView = findViewById(R.id.cl_empty);
+    }
 
+    private void initFilterBarClick(){
         findViewById(R.id.cv_bar).setOnClickListener(this);
         findViewById(R.id.bn_clear_filter).setOnClickListener(this);
-
-        // View model
-        viewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
-
-        // Enable Firestore logging
-        FirebaseFirestore.setLoggingEnabled(true);
-
-        // Initialize Firestore and the main RecyclerView
-        initFirestore();
-        initRecyclerView();
-
-        // Filter Dialog
-        filterDialog = new FilterDialogFragment();
     }
 
     private void initFirestore() {
@@ -93,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         adapter = new RestaurantAdapter(query, this) {
-
             @Override
             protected void onDataChanged() {
                 // Show/hide content if the query returns empty.
@@ -119,18 +103,64 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        initToolbar();
+        initViews();
+        initFilterBarClick();
+
+        // View model
+        viewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
+
+        // Enable Firestore logging
+        FirebaseFirestore.setLoggingEnabled(true);
+
+        // Initialize Firestore and the main RecyclerView
+        initFirestore();
+        initRecyclerView();
+
+        // Filter Dialog
+        filterDialog = new FilterDialogFragment();
+    }
+
+    private boolean shouldStartSignIn() {
+        return (!viewModel.getIsSigningIn() && FirebaseAuth.getInstance().getCurrentUser() == null);
+    }
+
+    private void startSignIn() {
+        // Sign in with FirebaseUI
+        Intent intent = AuthUI.getInstance().createSignInIntentBuilder()
+                .setAvailableProviders(Collections.singletonList(
+                        new AuthUI.IdpConfig.EmailBuilder().build()))
+                .setIsSmartLockEnabled(false)
+                .build();
+
+        startActivityForResult(intent, RC_SIGN_IN);
+        viewModel.setIsSigningIn(true);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_SIGN_IN) {
+            viewModel.setIsSigningIn(false);
+            if (resultCode != RESULT_OK && shouldStartSignIn()) {
+                startSignIn();
+            }
+        }
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
-
         // Start sign in if necessary
         if (shouldStartSignIn()) {
             startSignIn();
             return;
         }
-
         // Apply filters
         onFilter(viewModel.getFilters());
-
         // Start listening for Firestore updates
         if (adapter != null) {
             adapter.startListening();
@@ -148,11 +178,9 @@ public class MainActivity extends AppCompatActivity implements
     private void onAddItemsClicked() {
         // Get a reference to the restaurants collection
         CollectionReference restaurants = firestore.collection("restaurants");
-
         for (int i = 0; i < 10; i++) {
             // Get a random Restaurant POJO
             Restaurant restaurant = RestaurantRepo.getRandom(this);
-
             // Add a new document to the restaurants collection
             restaurants.add(restaurant);
         }
@@ -162,38 +190,30 @@ public class MainActivity extends AppCompatActivity implements
     public void onFilter(Filters filters) {
         // Construct query basic query
         Query query = firestore.collection("restaurants");
-
         // Category (equality filter)
         if (filters.hasCategory()) {
             query = query.whereEqualTo("category", filters.getCategory());
         }
-
         // City (equality filter)
         if (filters.hasCity()) {
             query = query.whereEqualTo("city", filters.getCity());
         }
-
         // Price (equality filter)
         if (filters.hasPrice()) {
             query = query.whereEqualTo("price", filters.getPrice());
         }
-
         // Sort by (orderBy with direction)
         if (filters.hasSortBy()) {
             query = query.orderBy(filters.getSortBy(), filters.getSortDirection());
         }
-
         // Limit items
         query = query.limit(LIMIT);
-
         // Update the query
         this.query = query;
         adapter.setQuery(query);
-
         // Set header
-        currentSearchView.setText(Html.fromHtml(filters.getSearchDescription(this)));
-        currentSortByView.setText(filters.getOrderDescription(this));
-
+        tvCurrentSearch.setText(Html.fromHtml(filters.getSearchDescription(this)));
+        tvCurrentSort.setText(filters.getOrderDescription(this));
         // Save filters
         viewModel.setFilters(filters);
     }
@@ -218,17 +238,6 @@ public class MainActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
-            viewModel.setIsSigningIn(false);
-
-            if (resultCode != RESULT_OK && shouldStartSignIn()) {
-                startSignIn();
-            }
-        }
-    }
 
     @Override
     public void onClick(View v) {
@@ -248,7 +257,6 @@ public class MainActivity extends AppCompatActivity implements
 
     public void onClearFilterClicked() {
         filterDialog.resetFilters();
-
         onFilter(Filters.getDefault());
     }
 
@@ -257,25 +265,5 @@ public class MainActivity extends AppCompatActivity implements
         Intent intent = new Intent(this, RestaurantDetailActivity.class);
         intent.putExtra(RestaurantDetailActivity.KEY_RESTAURANT_ID, restaurant.getId());
         startActivity(intent);
-    }
-
-    private boolean shouldStartSignIn() {
-        return (!viewModel.getIsSigningIn() && FirebaseAuth.getInstance().getCurrentUser() == null);
-    }
-
-    private void startSignIn() {
-        // Sign in with FirebaseUI
-        Intent intent = AuthUI.getInstance().createSignInIntentBuilder()
-                .setAvailableProviders(Collections.singletonList(
-                        new AuthUI.IdpConfig.EmailBuilder().build()))
-                .setIsSmartLockEnabled(false)
-                .build();
-
-        startActivityForResult(intent, RC_SIGN_IN);
-        viewModel.setIsSigningIn(true);
-    }
-
-    private void showTodoToast() {
-        Toast.makeText(this, "TODO: Implement", Toast.LENGTH_SHORT).show();
     }
 }

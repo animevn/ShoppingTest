@@ -22,7 +22,7 @@ public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHo
         void onRestaurantSelected(DocumentSnapshot restaurant);
     }
 
-    private OnRestaurantSelectedListener mListener;
+    private final OnRestaurantSelectedListener mListener;
 
     public RestaurantAdapter(Query query, OnRestaurantSelectedListener listener) {
         super(query);
@@ -43,13 +43,13 @@ public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHo
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView ivImage;
-        TextView tvName;
-        MaterialRatingBar ratingBar;
-        TextView tvNumRating;
-        TextView tvPrice;
-        TextView tvCategory;
-        TextView tvCity;
+        final ImageView ivImage;
+        final TextView tvName;
+        final MaterialRatingBar ratingBar;
+        final TextView tvNumRating;
+        final TextView tvPrice;
+        final TextView tvCategory;
+        final TextView tvCity;
 
         public ViewHolder(View itemView) {
             super(itemView);

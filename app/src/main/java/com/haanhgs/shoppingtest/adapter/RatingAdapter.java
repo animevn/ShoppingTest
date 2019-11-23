@@ -34,9 +34,9 @@ public class RatingAdapter extends FirestoreAdapter<RatingAdapter.ViewHolder> {
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tvName;
-        MaterialRatingBar ratingBar;
-        TextView tvContent;
+        final TextView tvName;
+        final MaterialRatingBar ratingBar;
+        final TextView tvContent;
 
         public ViewHolder(View itemView) {
             super(itemView);

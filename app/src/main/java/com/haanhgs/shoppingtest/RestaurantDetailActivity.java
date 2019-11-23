@@ -1,6 +1,5 @@
 package com.haanhgs.shoppingtest;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -54,11 +53,7 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
     private ListenerRegistration restaurantRegistration;
     private RatingAdapter ratingAdapter;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_restaurant_detail);
-        
+    private void initViews(){
         imageView = findViewById(R.id.restaurant_image);
         nameView = findViewById(R.id.restaurant_name);
         ratingIndicator = findViewById(R.id.restaurant_rating);
@@ -71,13 +66,36 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
 
         findViewById(R.id.restaurant_button_back).setOnClickListener(this);
         findViewById(R.id.fab_show_rating_dialog).setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.restaurant_button_back:
+                onBackArrowClicked(v);
+                break;
+            case R.id.fab_show_rating_dialog:
+                onAddRatingClicked(v);
+                break;
+        }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_restaurant_detail);
+        initViews();
+
 
         // Get restaurant ID from extras
-        String restaurantId = getIntent().getExtras().getString(KEY_RESTAURANT_ID);
+        String restaurantId = null;
+        if (getIntent().getExtras() != null){
+            restaurantId = getIntent().getExtras().getString(KEY_RESTAURANT_ID);
+        }
         if (restaurantId == null) {
+            onBackPressed();
             throw new IllegalArgumentException("Must pass extra " + KEY_RESTAURANT_ID);
         }
-
         // Initialize Firestore
         firestore = FirebaseFirestore.getInstance();
 
@@ -88,7 +106,7 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
         Query ratingsQuery = restaurantRef
                 .collection("ratings")
                 .orderBy("timestamp", Query.Direction.DESCENDING)
-                .limit(50);
+                .limit(MainActivity.LIMIT);
 
         // RecyclerView
         ratingAdapter = new RatingAdapter(ratingsQuery) {
@@ -130,17 +148,7 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.restaurant_button_back:
-                onBackArrowClicked(v);
-                break;
-            case R.id.fab_show_rating_dialog:
-                onAddRatingClicked(v);
-                break;
-        }
-    }
+
 
     private Task<Void> addRating(final DocumentReference restaurantRef, final Rating rating) {
         // Create reference for new rating, for use inside the transaction
@@ -157,22 +165,22 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
                         .toObject(Restaurant.class);
 
                 // Compute new number of ratings
-                int newNumRatings = restaurant.getNumRatings() + 1;
+                if (restaurant != null){
+                    int newNumRatings = restaurant.getNumRatings() + 1;
+                    // Compute new average rating
+                    double oldRatingTotal = restaurant.getAvgRating() *
+                            restaurant.getNumRatings();
+                    double newAvgRating = (oldRatingTotal + rating.getRating()) /
+                            newNumRatings;
 
-                // Compute new average rating
-                double oldRatingTotal = restaurant.getAvgRating() *
-                        restaurant.getNumRatings();
-                double newAvgRating = (oldRatingTotal + rating.getRating()) /
-                        newNumRatings;
+                    // Set new restaurant info
+                    restaurant.setNumRatings(newNumRatings);
+                    restaurant.setAvgRating(newAvgRating);
 
-                // Set new restaurant info
-                restaurant.setNumRatings(newNumRatings);
-                restaurant.setAvgRating(newAvgRating);
-
-                // Commit to Firestore
-                transaction.set(restaurantRef, restaurant);
-                transaction.set(ratingRef, rating);
-
+                    // Commit to Firestore
+                    transaction.set(restaurantRef, restaurant);
+                    transaction.set(ratingRef, rating);
+                }
                 return null;
             }
         });
@@ -185,8 +193,8 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
             Log.w(TAG, "restaurant:onEvent", e);
             return;
         }
-
-        onRestaurantLoaded(snapshot.toObject(Restaurant.class));
+        Restaurant restaurant = snapshot.toObject(Restaurant.class);
+        if (restaurant != null) onRestaurantLoaded(restaurant);
     }
 
     private void onRestaurantLoaded(Restaurant restaurant) {
@@ -237,9 +245,9 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
 
     private void hideKeyboard() {
         View view = getCurrentFocus();
-        if (view != null) {
-            ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
-                    .hideSoftInputFromWindow(view.getWindowToken(), 0);
+        InputMethodManager manager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+        if (view != null && manager != null) {
+            manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
 }
