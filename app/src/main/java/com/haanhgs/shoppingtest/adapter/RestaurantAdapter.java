@@ -14,9 +14,7 @@ import com.google.firebase.firestore.Query;
 import com.haanhgs.shoppingtest.R;
 import com.haanhgs.shoppingtest.model.Restaurant;
 import com.haanhgs.shoppingtest.repo.RestaurantRepo;
-
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
-
 
 public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHolder> {
 
@@ -35,7 +33,7 @@ public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        return new ViewHolder(inflater.inflate(R.layout.item_restaurant, parent, false));
+        return new ViewHolder(inflater.inflate(R.layout.recycler_item_restaurant, parent, false));
     }
 
     @Override

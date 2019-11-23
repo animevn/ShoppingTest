@@ -21,7 +21,7 @@ public class RatingAdapter extends FirestoreAdapter<RatingAdapter.ViewHolder> {
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new ViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_rating, parent, false));
+                .inflate(R.layout.recycler_item_rating, parent, false));
     }
 
     @Override
@@ -40,7 +40,7 @@ public class RatingAdapter extends FirestoreAdapter<RatingAdapter.ViewHolder> {
 
         public ViewHolder(View itemView) {
             super(itemView);
-            nameView = itemView.findViewById(R.id.rating_item_name);
+            nameView = itemView.findViewById(R.id.tv_rating_name);
             ratingBar = itemView.findViewById(R.id.rating_item_rating);
             textView = itemView.findViewById(R.id.rating_item_text);
         }

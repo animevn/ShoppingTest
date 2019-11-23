@@ -142,7 +142,7 @@
         android:paddingBottom="16dp"
         android:paddingTop="28dp"
         android:visibility="gone"
-        tools:listitem="@layout/item_rating" />
+        tools:listitem="@layout/recycler_item_rating" />
 
     <!-- View for empty ratings -->
     <LinearLayout
