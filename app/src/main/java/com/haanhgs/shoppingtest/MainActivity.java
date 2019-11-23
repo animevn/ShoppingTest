@@ -26,7 +26,7 @@ import com.google.firebase.firestore.Query;
 import com.haanhgs.shoppingtest.adapter.RestaurantAdapter;
 import com.haanhgs.shoppingtest.model.Restaurant;
 import com.haanhgs.shoppingtest.repo.Filters;
-import com.haanhgs.shoppingtest.repo.RestaurantUtil;
+import com.haanhgs.shoppingtest.repo.RestaurantRepo;
 import com.haanhgs.shoppingtest.viewmodel.MainActivityViewModel;
 import java.util.Collections;
 
@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements
 
         for (int i = 0; i < 10; i++) {
             // Get a random Restaurant POJO
-            Restaurant restaurant = RestaurantUtil.getRandom(this);
+            Restaurant restaurant = RestaurantRepo.getRandom(this);
 
             // Add a new document to the restaurants collection
             restaurants.add(restaurant);

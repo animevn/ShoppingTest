@@ -109,7 +109,7 @@ public class Filters {
         if (price > 0) {
             stringBuilder.append(" for ");
             stringBuilder.append("<b>");
-            stringBuilder.append(RestaurantUtil.getPriceString(price));
+            stringBuilder.append(RestaurantRepo.getPriceString(price));
             stringBuilder.append("</b>");
         }
 

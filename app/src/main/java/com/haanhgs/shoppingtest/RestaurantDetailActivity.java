@@ -28,7 +28,8 @@ import com.google.firebase.firestore.Transaction;
 import com.haanhgs.shoppingtest.adapter.RatingAdapter;
 import com.haanhgs.shoppingtest.model.Rating;
 import com.haanhgs.shoppingtest.model.Restaurant;
-import com.haanhgs.shoppingtest.repo.RestaurantUtil;
+import com.haanhgs.shoppingtest.repo.RestaurantRepo;
+
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 
 public class RestaurantDetailActivity extends AppCompatActivity implements
@@ -194,7 +195,7 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
         numRatingsView.setText(getString(R.string.fmt_num_ratings, restaurant.getNumRatings()));
         cityView.setText(restaurant.getCity());
         categoryView.setText(restaurant.getCategory());
-        priceView.setText(RestaurantUtil.getPriceString(restaurant));
+        priceView.setText(RestaurantRepo.getPriceString(restaurant));
 
         // Background image
         Glide.with(imageView.getContext())

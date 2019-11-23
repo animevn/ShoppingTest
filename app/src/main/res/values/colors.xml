@@ -9,4 +9,20 @@
     <color name="greySecondary">#8B000000</color>
     <color name="greyDisabled">#61000000</color>
 
+    <color name="peterRiver">#3498DB</color>
+    <color name="emerald">#2ecc71</color>
+    <color name="amethyst">#9b59b6</color>
+    <color name="westAsphalt">#34495e</color>
+    <color name="sunFlower">#f1c40f</color>
+    <color name="carrot">#E67E22</color>
+    <color name="alizarin">#e74c3c</color>
+    <color name="cloud">#ECF0F1</color>
+    <color name="concrete">#95a5a6</color>
+    <color name="orange">#F39C12</color>
+    <color name="pumpkin">#d35400</color>
+    <color name="pomegranate">#c0392b</color>
+    <color name="turquoise">#1abc9c</color>
+    <color name="greenSea">#16a085</color>
+    <color name="belize">#2980b9</color>
+
 </resources>

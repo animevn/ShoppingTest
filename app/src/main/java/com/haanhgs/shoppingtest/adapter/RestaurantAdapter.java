@@ -13,7 +13,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.haanhgs.shoppingtest.R;
 import com.haanhgs.shoppingtest.model.Restaurant;
-import com.haanhgs.shoppingtest.repo.RestaurantUtil;
+import com.haanhgs.shoppingtest.repo.RestaurantRepo;
+
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 
 
@@ -44,23 +45,23 @@ public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHo
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView imageView;
-        TextView nameView;
+        ImageView ivImage;
+        TextView tvName;
         MaterialRatingBar ratingBar;
-        TextView numRatingsView;
-        TextView priceView;
-        TextView categoryView;
-        TextView cityView;
+        TextView tvNumRating;
+        TextView tvPrice;
+        TextView tvCategory;
+        TextView tvCity;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.restaurant_item_image);
-            nameView = itemView.findViewById(R.id.restaurant_item_name);
-            ratingBar = itemView.findViewById(R.id.restaurant_item_rating);
-            numRatingsView = itemView.findViewById(R.id.restaurant_item_num_ratings);
-            priceView = itemView.findViewById(R.id.restaurant_item_price);
-            categoryView = itemView.findViewById(R.id.restaurant_item_category);
-            cityView = itemView.findViewById(R.id.restaurant_item_city);
+            ivImage = itemView.findViewById(R.id.iv_restaurant_image);
+            tvName = itemView.findViewById(R.id.tv_restaurant_name);
+            ratingBar = itemView.findViewById(R.id.ratingbar_restaurant);
+            tvNumRating = itemView.findViewById(R.id.tv_restaurant_num_rating);
+            tvPrice = itemView.findViewById(R.id.tv_restaurant_price);
+            tvCategory = itemView.findViewById(R.id.tv_restaurant_category);
+            tvCity = itemView.findViewById(R.id.tv_restaurant_city);
         }
 
         public void bind(final DocumentSnapshot snapshot,
@@ -70,16 +71,16 @@ public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHo
             Resources resources = itemView.getResources();
             if (restaurant != null){
                 // Load image
-                Glide.with(imageView.getContext())
+                Glide.with(ivImage.getContext())
                         .load(restaurant.getPhoto())
-                        .into(imageView);
-                nameView.setText(restaurant.getName());
+                        .into(ivImage);
+                tvName.setText(restaurant.getName());
                 ratingBar.setRating((float) restaurant.getAvgRating());
-                cityView.setText(restaurant.getCity());
-                categoryView.setText(restaurant.getCategory());
-                numRatingsView.setText(resources.getString(R.string.fmt_num_ratings,
+                tvCity.setText(restaurant.getCity());
+                tvCategory.setText(restaurant.getCategory());
+                tvNumRating.setText(resources.getString(R.string.fmt_num_ratings,
                         restaurant.getNumRatings()));
-                priceView.setText(RestaurantUtil.getPriceString(restaurant));
+                tvPrice.setText(RestaurantRepo.getPriceString(restaurant));
             }
             // Click listener
             itemView.setOnClickListener(new View.OnClickListener() {

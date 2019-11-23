@@ -1,6 +1,8 @@
  package com.haanhgs.shoppingtest;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,39 +18,39 @@ import com.haanhgs.shoppingtest.repo.Filters;
 
  public class FilterDialogFragment extends DialogFragment implements View.OnClickListener {
 
-    public static final String TAG = "FilterDialog";
-
     interface FilterListener {
-
         void onFilter(Filters filters);
-
     }
 
-    private View mRootView;
+     private FilterListener filterListener;
 
-    private Spinner mCategorySpinner;
-    private Spinner mCitySpinner;
-    private Spinner mSortSpinner;
-    private Spinner mPriceSpinner;
+    public static final String TAG = "FilterDialog";
+    private View fragmentView;
+    private Spinner spinnerCategory;
+    private Spinner spinnerCity;
+    private Spinner spinnerSort;
+    private Spinner spinnerPrice;
 
-    private FilterListener mFilterListener;
+
+    private void initViews(View view){
+        spinnerCategory = view.findViewById(R.id.sp_category);
+        spinnerCity = view.findViewById(R.id.sp_city);
+        spinnerSort = view.findViewById(R.id.sp_sort);
+        spinnerPrice = view.findViewById(R.id.sp_price);
+
+        //init buttons
+        fragmentView.findViewById(R.id.bn_search).setOnClickListener(this);
+        fragmentView.findViewById(R.id.bn_cancel).setOnClickListener(this);
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        mRootView = inflater.inflate(R.layout.dialog_filters, container, false);
-
-        mCategorySpinner = mRootView.findViewById(R.id.spinner_category);
-        mCitySpinner = mRootView.findViewById(R.id.spinner_city);
-        mSortSpinner = mRootView.findViewById(R.id.spinner_sort);
-        mPriceSpinner = mRootView.findViewById(R.id.spinner_price);
-
-        mRootView.findViewById(R.id.button_search).setOnClickListener(this);
-        mRootView.findViewById(R.id.button_cancel).setOnClickListener(this);
-
-        return mRootView;
+        fragmentView = inflater.inflate(R.layout.dialog_filters, container, false);
+        initViews(fragmentView);
+        return fragmentView;
     }
 
     @Override
@@ -56,7 +58,7 @@ import com.haanhgs.shoppingtest.repo.Filters;
         super.onAttach(context);
 
         if (context instanceof FilterListener) {
-            mFilterListener = (FilterListener) context;
+            filterListener = (FilterListener) context;
         }
     }
 
@@ -64,29 +66,31 @@ import com.haanhgs.shoppingtest.repo.Filters;
     public void onResume() {
         super.onResume();
         if (getDialog() != null && getDialog().getWindow() != null){
-            getDialog().getWindow().setLayout(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         }
+//        if (getDialog() != null && getDialog().getWindow() != null){
+//            getDialog().getWindow().setLayout(
+//                    ViewGroup.LayoutParams.MATCH_PARENT,
+//                    ViewGroup.LayoutParams.WRAP_CONTENT);
+//        }
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.button_search:
+            case R.id.bn_search:
                 onSearchClicked();
                 break;
-            case R.id.button_cancel:
+            case R.id.bn_cancel:
                 onCancelClicked();
                 break;
         }
     }
 
     public void onSearchClicked() {
-        if (mFilterListener != null) {
-            mFilterListener.onFilter(getFilters());
+        if (filterListener != null) {
+            filterListener.onFilter(getFilters());
         }
-
         dismiss();
     }
 
@@ -96,7 +100,7 @@ import com.haanhgs.shoppingtest.repo.Filters;
 
     @Nullable
     private String getSelectedCategory() {
-        String selected = (String) mCategorySpinner.getSelectedItem();
+        String selected = (String) spinnerCategory.getSelectedItem();
         if (getString(R.string.value_any_category).equals(selected)) {
             return null;
         } else {
@@ -106,7 +110,7 @@ import com.haanhgs.shoppingtest.repo.Filters;
 
     @Nullable
     private String getSelectedCity() {
-        String selected = (String) mCitySpinner.getSelectedItem();
+        String selected = (String) spinnerCity.getSelectedItem();
         if (getString(R.string.value_any_city).equals(selected)) {
             return null;
         } else {
@@ -115,7 +119,7 @@ import com.haanhgs.shoppingtest.repo.Filters;
     }
 
     private int getSelectedPrice() {
-        String selected = (String) mPriceSpinner.getSelectedItem();
+        String selected = (String) spinnerPrice.getSelectedItem();
         if (selected.equals(getString(R.string.price_1))) {
             return 1;
         } else if (selected.equals(getString(R.string.price_2))) {
@@ -129,7 +133,7 @@ import com.haanhgs.shoppingtest.repo.Filters;
 
     @Nullable
     private String getSelectedSortBy() {
-        String selected = (String) mSortSpinner.getSelectedItem();
+        String selected = (String) spinnerSort.getSelectedItem();
         if (getString(R.string.sort_by_rating).equals(selected)) {
             return Restaurant.FIELD_AVG_RATING;
         } if (getString(R.string.sort_by_price).equals(selected)) {
@@ -137,13 +141,12 @@ import com.haanhgs.shoppingtest.repo.Filters;
         } if (getString(R.string.sort_by_popularity).equals(selected)) {
             return Restaurant.FIELD_POPULARITY;
         }
-
         return null;
     }
 
     @Nullable
     private Query.Direction getSortDirection() {
-        String selected = (String) mSortSpinner.getSelectedItem();
+        String selected = (String) spinnerSort.getSelectedItem();
         if (getString(R.string.sort_by_rating).equals(selected)) {
             return Query.Direction.DESCENDING;
         } if (getString(R.string.sort_by_price).equals(selected)) {
@@ -156,18 +159,18 @@ import com.haanhgs.shoppingtest.repo.Filters;
     }
 
     public void resetFilters() {
-        if (mRootView != null) {
-            mCategorySpinner.setSelection(0);
-            mCitySpinner.setSelection(0);
-            mPriceSpinner.setSelection(0);
-            mSortSpinner.setSelection(0);
+        if (fragmentView != null) {
+            spinnerCategory.setSelection(0);
+            spinnerCity.setSelection(0);
+            spinnerPrice.setSelection(0);
+            spinnerSort.setSelection(0);
         }
     }
 
     public Filters getFilters() {
         Filters filters = new Filters();
 
-        if (mRootView != null) {
+        if (fragmentView != null) {
             filters.setCategory(getSelectedCategory());
             filters.setCity(getSelectedCity());
             filters.setPrice(getSelectedPrice());
