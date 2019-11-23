@@ -70,10 +70,13 @@ public class MainActivity extends AppCompatActivity implements
     private void initFirestore() {
         firestore = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
-        query = firestore.collection("app")
-                .document(user.getUid()).collection("test")
-                .orderBy("avgRating", Query.Direction.DESCENDING)
-                .limit(LIMIT);
+        if (user != null){
+            query = firestore.collection("app")
+                    .document(user.getUid()).collection("test")
+                    .orderBy("avgRating", Query.Direction.DESCENDING)
+                    .limit(LIMIT);
+        }
+
     }
 
     private void initRecyclerView() {
@@ -134,6 +137,15 @@ public class MainActivity extends AppCompatActivity implements
         return (!viewModel.getIsSigningIn() && FirebaseAuth.getInstance().getCurrentUser() == null);
     }
 
+    private void startUpdateData(){
+        // Apply filters
+        onFilter(viewModel.getFilters());
+        // Start listening for Firestore updates
+        if (adapter != null) {
+            adapter.startListening();
+        }
+    }
+
     private void startSignIn() {
         // Sign in with FirebaseUI
         Intent intent = AuthUI.getInstance().createSignInIntentBuilder()
@@ -183,7 +195,8 @@ public class MainActivity extends AppCompatActivity implements
 
     private void onAddItemsClicked() {
         // Get a reference to the restaurants collection
-        CollectionReference restaurants = firestore.collection("app").document(user.getUid()).collection("test");
+        CollectionReference restaurants = firestore
+                .collection("app").document(user.getUid()).collection("test");
         for (int i = 0; i < 10; i++) {
             // Get a random Restaurant POJO
             Restaurant restaurant = RestaurantRepo.getRandom(this);
@@ -238,6 +251,7 @@ public class MainActivity extends AppCompatActivity implements
                 break;
             case R.id.menu_sign_out:
                 AuthUI.getInstance().signOut(this);
+
                 startSignIn();
 
                 break;
