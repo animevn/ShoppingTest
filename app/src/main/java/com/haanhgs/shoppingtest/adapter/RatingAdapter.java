@@ -34,21 +34,21 @@ public class RatingAdapter extends FirestoreAdapter<RatingAdapter.ViewHolder> {
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView nameView;
+        TextView tvName;
         MaterialRatingBar ratingBar;
-        TextView textView;
+        TextView tvContent;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            nameView = itemView.findViewById(R.id.tv_rating_name);
-            ratingBar = itemView.findViewById(R.id.rating_item_rating);
-            textView = itemView.findViewById(R.id.rating_item_text);
+            tvName = itemView.findViewById(R.id.tv_rating_name);
+            ratingBar = itemView.findViewById(R.id.ratingbar);
+            tvContent = itemView.findViewById(R.id.tv_rating_content);
         }
 
         public void bind(Rating rating) {
-            nameView.setText(rating.getUserName());
+            tvName.setText(rating.getUserName());
             ratingBar.setRating((float) rating.getRating());
-            textView.setText(rating.getText());
+            tvContent.setText(rating.getText());
         }
     }
 
