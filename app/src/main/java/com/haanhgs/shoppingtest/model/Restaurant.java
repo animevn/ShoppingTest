@@ -1,10 +1,7 @@
-package com.haanhgs.shoppingtest.model;
+ package com.haanhgs.shoppingtest.model;
 
 import com.google.firebase.firestore.IgnoreExtraProperties;
 
-/**
- * Restaurant POJO.
- */
 @IgnoreExtraProperties
 public class Restaurant {
 

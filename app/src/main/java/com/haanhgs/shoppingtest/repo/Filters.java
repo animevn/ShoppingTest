@@ -1,12 +1,12 @@
-package com.haanhgs.shoppingtest;
+package com.haanhgs.shoppingtest.repo;
 
 import android.content.Context;
 import android.text.TextUtils;
 import com.google.firebase.firestore.Query;
+import com.haanhgs.shoppingtest.R;
+import com.haanhgs.shoppingtest.model.Restaurant;
 
-/**
- * Object for passing filters around.
- */
+
 public class Filters {
 
     private String category = null;
@@ -82,38 +82,38 @@ public class Filters {
     }
 
     public String getSearchDescription(Context context) {
-        StringBuilder desc = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
 
         if (category == null && city == null) {
-            desc.append("<b>");
-            desc.append(context.getString(R.string.all_restaurants));
-            desc.append("</b>");
+            stringBuilder.append("<b>");
+            stringBuilder.append(context.getString(R.string.all_restaurants));
+            stringBuilder.append("</b>");
         }
 
         if (category != null) {
-            desc.append("<b>");
-            desc.append(category);
-            desc.append("</b>");
+            stringBuilder.append("<b>");
+            stringBuilder.append(category);
+            stringBuilder.append("</b>");
         }
 
         if (category != null && city != null) {
-            desc.append(" in ");
+            stringBuilder.append(" in ");
         }
 
         if (city != null) {
-            desc.append("<b>");
-            desc.append(city);
-            desc.append("</b>");
+            stringBuilder.append("<b>");
+            stringBuilder.append(city);
+            stringBuilder.append("</b>");
         }
 
         if (price > 0) {
-            desc.append(" for ");
-            desc.append("<b>");
-            desc.append(RestaurantUtil.getPriceString(price));
-            desc.append("</b>");
+            stringBuilder.append(" for ");
+            stringBuilder.append("<b>");
+            stringBuilder.append(RestaurantUtil.getPriceString(price));
+            stringBuilder.append("</b>");
         }
 
-        return desc.toString();
+        return stringBuilder.toString();
     }
 
     public String getOrderDescription(Context context) {

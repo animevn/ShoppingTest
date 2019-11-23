@@ -10,9 +10,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import com.google.firebase.firestore.Query;
+import com.haanhgs.shoppingtest.model.Restaurant;
+import com.haanhgs.shoppingtest.repo.Filters;
 
 
-public class FilterDialogFragment extends DialogFragment implements View.OnClickListener {
+ public class FilterDialogFragment extends DialogFragment implements View.OnClickListener {
 
     public static final String TAG = "FilterDialog";
 

@@ -16,7 +16,6 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -27,6 +26,9 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.Transaction;
 import com.haanhgs.shoppingtest.adapter.RatingAdapter;
+import com.haanhgs.shoppingtest.model.Rating;
+import com.haanhgs.shoppingtest.model.Restaurant;
+import com.haanhgs.shoppingtest.repo.RestaurantUtil;
 
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 

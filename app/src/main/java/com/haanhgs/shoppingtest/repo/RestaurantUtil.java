@@ -1,7 +1,6 @@
-package com.haanhgs.shoppingtest.util;
+package com.haanhgs.shoppingtest.repo;
 
 import android.content.Context;
-
 
 import com.haanhgs.shoppingtest.R;
 import com.haanhgs.shoppingtest.model.Restaurant;
@@ -13,13 +12,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Utilities for Restaurants.
- */
 public class RestaurantUtil {
 
     private static final String TAG = "RestaurantUtil";
-
     private static final ThreadPoolExecutor EXECUTOR = new ThreadPoolExecutor(2, 4, 60,
             TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 
@@ -85,7 +80,6 @@ public class RestaurantUtil {
     private static String getRandomImageUrl(Random random) {
         // Integer between 1 and MAX_IMAGE_NUM (inclusive)
         int id = random.nextInt(MAX_IMAGE_NUM) + 1;
-
         return String.format(Locale.getDefault(), RESTAURANT_URL_FMT, id);
     }
 

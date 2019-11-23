@@ -2,7 +2,6 @@ package com.haanhgs.shoppingtest;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.renderscript.Script;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import com.google.firebase.auth.FirebaseAuth;
+import com.haanhgs.shoppingtest.model.Rating;
+
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 
 

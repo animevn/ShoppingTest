@@ -24,6 +24,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.haanhgs.shoppingtest.adapter.RestaurantAdapter;
+import com.haanhgs.shoppingtest.model.Restaurant;
+import com.haanhgs.shoppingtest.repo.Filters;
+import com.haanhgs.shoppingtest.repo.RestaurantUtil;
 import com.haanhgs.shoppingtest.viewmodel.MainActivityViewModel;
 
 import java.util.Collections;

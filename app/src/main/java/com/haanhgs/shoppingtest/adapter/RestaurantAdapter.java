@@ -12,8 +12,8 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.haanhgs.shoppingtest.R;
-import com.haanhgs.shoppingtest.Restaurant;
-import com.haanhgs.shoppingtest.RestaurantUtil;
+import com.haanhgs.shoppingtest.model.Restaurant;
+import com.haanhgs.shoppingtest.repo.RestaurantUtil;
 
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 
