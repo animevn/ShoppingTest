@@ -15,7 +15,6 @@ import com.google.firebase.firestore.Query;
 import com.haanhgs.shoppingtest.model.Restaurant;
 import com.haanhgs.shoppingtest.repo.Filters;
 
-
  public class FilterDialogFragment extends DialogFragment implements View.OnClickListener {
 
     interface FilterListener {
@@ -169,7 +168,6 @@ import com.haanhgs.shoppingtest.repo.Filters;
 
     public Filters getFilters() {
         Filters filters = new Filters();
-
         if (fragmentView != null) {
             filters.setCategory(getSelectedCategory());
             filters.setCity(getSelectedCity());
@@ -177,7 +175,6 @@ import com.haanhgs.shoppingtest.repo.Filters;
             filters.setSortBy(getSelectedSortBy());
             filters.setSortDirection(getSortDirection());
         }
-
         return filters;
     }
 }

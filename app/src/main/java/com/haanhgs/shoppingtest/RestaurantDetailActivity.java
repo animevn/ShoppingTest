@@ -187,7 +187,6 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
                 return null;
             }
         });
-
     }
 
     @Override
@@ -207,7 +206,6 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
         cityView.setText(restaurant.getCity());
         categoryView.setText(restaurant.getCategory());
         priceView.setText(RestaurantRepo.getPriceString(restaurant));
-
         // Background image
         Glide.with(imageView.getContext())
                 .load(restaurant.getPhoto())

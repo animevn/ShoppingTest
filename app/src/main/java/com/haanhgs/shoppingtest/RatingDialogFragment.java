@@ -61,7 +61,6 @@ public class RatingDialogFragment extends DialogFragment implements View.OnClick
 //                    ViewGroup.LayoutParams.MATCH_PARENT,
 //                    ViewGroup.LayoutParams.WRAP_CONTENT);
 //        }
-
     }
 
     @Override
@@ -87,7 +86,6 @@ public class RatingDialogFragment extends DialogFragment implements View.OnClick
             }
             dismiss();
         }
-
     }
 
     public void onCancelClicked(View view) {

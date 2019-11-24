@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -76,7 +75,6 @@ public class MainActivity extends AppCompatActivity implements
                     .orderBy("avgRating", Query.Direction.DESCENDING)
                     .limit(LIMIT);
         }
-
     }
 
     private void initRecyclerView() {
@@ -99,9 +97,6 @@ public class MainActivity extends AppCompatActivity implements
 
             @Override
             protected void onError(FirebaseFirestoreException e) {
-                // Show a snackbar on errors
-                Snackbar.make(findViewById(android.R.id.content),
-                        "Error: check logs for info.", Snackbar.LENGTH_LONG).show();
             }
         };
 
@@ -116,22 +111,16 @@ public class MainActivity extends AppCompatActivity implements
         initToolbar();
         initViews();
         initFilterBarClick();
-
         // View model
         viewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
-
         // Enable Firestore logging
         FirebaseFirestore.setLoggingEnabled(true);
-
         // Initialize Firestore and the main RecyclerView
         initFirestore();
         initRecyclerView();
-
         // Filter Dialog
         filterDialog = new FilterDialogFragment();
     }
-
-
 
     private boolean shouldStartSignIn() {
         return (!viewModel.getIsSigningIn() && FirebaseAuth.getInstance().getCurrentUser() == null);
@@ -251,14 +240,11 @@ public class MainActivity extends AppCompatActivity implements
                 break;
             case R.id.menu_sign_out:
                 AuthUI.getInstance().signOut(this);
-
                 startSignIn();
-
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
-
 
     @Override
     public void onClick(View v) {
