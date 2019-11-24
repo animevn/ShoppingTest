@@ -28,7 +28,6 @@ import com.haanhgs.shoppingtest.adapter.RatingAdapter;
 import com.haanhgs.shoppingtest.model.Rating;
 import com.haanhgs.shoppingtest.model.Restaurant;
 import com.haanhgs.shoppingtest.repo.RestaurantRepo;
-
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 
 public class RestaurantDetailActivity extends AppCompatActivity implements
@@ -150,8 +149,6 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
             restaurantRegistration = null;
         }
     }
-
-
 
     private Task<Void> addRating(final DocumentReference restaurantRef, final Rating rating) {
         // Create reference for new rating, for use inside the transaction

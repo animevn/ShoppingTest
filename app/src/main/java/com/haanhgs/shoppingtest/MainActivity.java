@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private boolean shouldStartSignIn() {
-        return (!viewModel.getIsSigningIn() && FirebaseAuth.getInstance().getCurrentUser() == null);
+        return (!viewModel.getIsSigningIn() && user == null);
     }
 
     private void startUpdateData(){
@@ -145,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements
 
         startActivityForResult(intent, RC_SIGN_IN);
         viewModel.setIsSigningIn(true);
+
     }
 
     @Override
@@ -155,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements
             if (resultCode != RESULT_OK && shouldStartSignIn()) {
                 startSignIn();
             }
+            startUpdateData();
         }
     }
 
@@ -166,12 +168,7 @@ public class MainActivity extends AppCompatActivity implements
             startSignIn();
             return;
         }
-        // Apply filters
-        onFilter(viewModel.getFilters());
-        // Start listening for Firestore updates
-        if (adapter != null) {
-            adapter.startListening();
-        }
+        startUpdateData();
     }
 
     @Override
@@ -240,7 +237,9 @@ public class MainActivity extends AppCompatActivity implements
                 break;
             case R.id.menu_sign_out:
                 AuthUI.getInstance().signOut(this);
-                startSignIn();
+                user = null;
+                viewModel.setIsSigningIn(false);
+                onStart();
                 break;
         }
         return super.onOptionsItemSelected(item);

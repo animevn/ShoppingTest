@@ -61,6 +61,7 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
         return snapshots.get(index);
     }
 
+    @SuppressWarnings("EmptyMethod")
     protected void onError(FirebaseFirestoreException e) {}
 
     protected void onDataChanged() {}
