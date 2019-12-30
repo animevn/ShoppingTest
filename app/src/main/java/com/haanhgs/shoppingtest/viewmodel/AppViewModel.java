@@ -3,22 +3,22 @@ package com.haanhgs.shoppingtest.viewmodel;
 import com.haanhgs.shoppingtest.repo.Filters;
 import androidx.lifecycle.ViewModel;
 
-public class MainActivityViewModel extends ViewModel {
+public class AppViewModel extends ViewModel {
 
-    private boolean isSigningIn;
+    private boolean signIn;
     private Filters filters;
 
-    public MainActivityViewModel() {
-        isSigningIn = false;
+    public AppViewModel() {
+        signIn = false;
         filters = Filters.getDefault();
     }
 
-    public boolean getIsSigningIn() {
-        return isSigningIn;
+    public boolean isSignIn() {
+        return signIn;
     }
 
-    public void setIsSigningIn(boolean isSigningIn) {
-        this.isSigningIn = isSigningIn;
+    public void setSignIn(boolean isSignIn) {
+        this.signIn = isSignIn;
     }
 
     public Filters getFilters() {

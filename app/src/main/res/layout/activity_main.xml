@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fl_main"
+    android:id="@+id/flMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.haanhgs.shoppingtest.MainActivity"
@@ -11,13 +11,13 @@
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_main"
+        android:id="@+id/clMain"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#E0E0E0">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/tbr_main"
+            android:id="@+id/tbrMain"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
@@ -32,18 +32,18 @@
             app:titleTextColor="@android:color/white" />
 
         <FrameLayout
-            android:id="@+id/fl_bar"
+            android:id="@+id/flBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/tbr_main"
+            android:layout_below="@+id/tbrMain"
             android:background="?attr/colorPrimary"
             android:paddingLeft="12dp"
             android:paddingRight="12dp"
             android:paddingBottom="12dp"
-            app:layout_constraintTop_toBottomOf="@+id/tbr_main">
+            app:layout_constraintTop_toBottomOf="@+id/tbrMain">
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/cv_bar"
+                android:id="@+id/cvBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
@@ -58,7 +58,7 @@
                     android:gravity="center_vertical">
 
                     <ImageView
-                        android:id="@+id/bn_filter"
+                        android:id="@+id/bnFilter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
@@ -71,7 +71,7 @@
                         app:srcCompat="@drawable/ic_filter_list_white_24px" />
 
                     <TextView
-                        android:id="@+id/tv_current_filter"
+                        android:id="@+id/tvCurrentFilter"
                         style="@style/AppTheme.Body1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -81,25 +81,25 @@
                         android:text="@string/all_restaurants"
                         android:textColor="@color/greySecondary"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/bn_clear_filter"
-                        app:layout_constraintStart_toEndOf="@+id/bn_filter"
+                        app:layout_constraintEnd_toStartOf="@+id/bnClearFilter"
+                        app:layout_constraintStart_toEndOf="@+id/bnFilter"
                         app:layout_constraintTop_toTopOf="parent"
                         tools:text="Filter" />
 
                     <TextView
-                        android:id="@+id/tv_current_sort_by"
+                        android:id="@+id/tvCurrentSortBy"
                         style="@style/AppTheme.Caption"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:text="@string/sorted_by_rating"
                         android:textColor="@color/greyDisabled"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="@+id/tv_current_filter"
-                        app:layout_constraintStart_toStartOf="@+id/tv_current_filter"
-                        app:layout_constraintTop_toBottomOf="@+id/tv_current_filter" />
+                        app:layout_constraintEnd_toEndOf="@+id/tvCurrentFilter"
+                        app:layout_constraintStart_toStartOf="@+id/tvCurrentFilter"
+                        app:layout_constraintTop_toBottomOf="@+id/tvCurrentFilter" />
 
                     <ImageView
-                        android:id="@+id/bn_clear_filter"
+                        android:id="@+id/bnClearFilter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
@@ -120,7 +120,7 @@
 
         <!-- Main Restaurants recycler -->
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_main"
+            android:id="@+id/rvMain"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@android:color/white"
@@ -138,11 +138,11 @@
             android:background="@drawable/bg_shadow"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/fl_bar" />
+            app:layout_constraintTop_toBottomOf="@+id/flBar" />
 
         <!-- Empty list (pizza guy) view -->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_empty"
+            android:id="@+id/clEmpty"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:visibility="gone"
@@ -181,7 +181,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ProgressBar
-            android:id="@+id/progress_loading"
+            android:id="@+id/pbrLoading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"

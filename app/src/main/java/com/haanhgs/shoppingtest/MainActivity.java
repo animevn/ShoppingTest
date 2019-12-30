@@ -7,13 +7,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -26,53 +21,56 @@ import com.haanhgs.shoppingtest.adapter.RestaurantAdapter;
 import com.haanhgs.shoppingtest.model.Restaurant;
 import com.haanhgs.shoppingtest.repo.Filters;
 import com.haanhgs.shoppingtest.repo.RestaurantRepo;
-import com.haanhgs.shoppingtest.viewmodel.MainActivityViewModel;
+import com.haanhgs.shoppingtest.viewmodel.AppViewModel;
 import java.util.Collections;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity implements
-        View.OnClickListener,
-        FilterDialogFragment.FilterListener,
-        RestaurantAdapter.OnRestaurantSelectedListener {
+public class MainActivity extends AppCompatActivity implements FilterDialogFragment.FilterListener{
+
+    @BindView(R.id.tvCurrentFilter)
+    TextView tvCurrentFilter;
+    @BindView(R.id.tvCurrentSortBy)
+    TextView tvCurrentSortBy;
+    @BindView(R.id.bnClearFilter)
+    ImageView bnClearFilter;
+    @BindView(R.id.cvBar)
+    CardView cvBar;
+    @BindView(R.id.rvMain)
+    RecyclerView rvMain;
+    @BindView(R.id.clEmpty)
+    ConstraintLayout clEmpty;
+    @BindView(R.id.tbrMain)
+    Toolbar tbrMain;
 
     public static final int LIMIT = 50;
     private static final String TAG = "MainActivity";
     private static final int RC_SIGN_IN = 9001;
 
-
-    private TextView tvCurrentSearch;
-    private TextView tvCurrentSort;
-    private RecyclerView restaurantsRecycler;
-    private ViewGroup emptyView;
-
-
     private FirebaseFirestore firestore;
     private Query query;
     private FilterDialogFragment filterDialog;
     private RestaurantAdapter adapter;
-    private MainActivityViewModel viewModel;
+    private AppViewModel viewModel;
     private FirebaseUser user;
+    private RestaurantAdapter adapter1;
 
-    private void initToolbar(){
-        Toolbar toolbar = findViewById(R.id.tbr_main);
-        setSupportActionBar(toolbar);
-    }
-
-    private void initViews(){
-        tvCurrentSearch = findViewById(R.id.tv_current_filter);
-        tvCurrentSort = findViewById(R.id.tv_current_sort_by);
-        restaurantsRecycler = findViewById(R.id.rv_main);
-        emptyView = findViewById(R.id.cl_empty);
-    }
-
-    private void initFilterBarClick(){
-        findViewById(R.id.cv_bar).setOnClickListener(this);
-        findViewById(R.id.bn_clear_filter).setOnClickListener(this);
+    private void initToolbar() {
+        setSupportActionBar(tbrMain);
     }
 
     private void initFirestore() {
         firestore = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null){
+        if (user != null) {
             query = firestore.collection("app")
                     .document(user.getUid()).collection("test")
                     .orderBy("avgRating", Query.Direction.DESCENDING)
@@ -80,41 +78,39 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    private void initRecyclerView() {
-        if (query == null) {
-            Log.w(TAG, "No query, not initializing RecyclerView");
-        }
+    private void openRestaurantDetail(DocumentSnapshot restaurant){
+        Intent intent = new Intent(MainActivity.this, RestaurantDetailActivity.class);
+        intent.putExtra(RestaurantDetailActivity.KEY_RESTAURANT_ID, restaurant.getId());
+        intent.putExtra(RestaurantDetailActivity.KEY_USER_ID, user.getUid());
+        startActivity(intent);
+    }
 
-        adapter = new RestaurantAdapter(query, this) {
+    private void initRecyclerView() {
+        if (query == null) Log.w(TAG, "No query, not initializing RecyclerView");
+        adapter = new RestaurantAdapter(query, this::openRestaurantDetail) {
             @Override
             protected void onDataChanged() {
-                // Show/hide content if the query returns empty.
                 if (getItemCount() == 0) {
-                    restaurantsRecycler.setVisibility(View.GONE);
-                    emptyView.setVisibility(View.VISIBLE);
+                    rvMain.setVisibility(View.GONE);
+                    clEmpty.setVisibility(View.VISIBLE);
                 } else {
-                    restaurantsRecycler.setVisibility(View.VISIBLE);
-                    emptyView.setVisibility(View.GONE);
+                    rvMain.setVisibility(View.VISIBLE);
+                    clEmpty.setVisibility(View.GONE);
                 }
             }
-
-            @Override
-            protected void onError(FirebaseFirestoreException e) {
-            }
+            @Override protected void onError(FirebaseFirestoreException e){}
         };
-
-        restaurantsRecycler.setLayoutManager(new LinearLayoutManager(this));
-        restaurantsRecycler.setAdapter(adapter);
+        rvMain.setLayoutManager(new LinearLayoutManager(this));
+        rvMain.setAdapter(adapter);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         initToolbar();
-        initViews();
-        initFilterBarClick();
-        viewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(AppViewModel.class);
         FirebaseFirestore.setLoggingEnabled(true);
         initFirestore();
         initRecyclerView();
@@ -122,10 +118,10 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private boolean shouldStartSignIn() {
-        return (!viewModel.getIsSigningIn() && user == null);
+        return (!viewModel.isSignIn() && user == null);
     }
 
-    private void startUpdateData(){
+    private void startUpdateData() {
         onFilter(viewModel.getFilters());
         if (adapter != null) {
             adapter.startListening();
@@ -140,15 +136,14 @@ public class MainActivity extends AppCompatActivity implements
                 .build();
 
         startActivityForResult(intent, RC_SIGN_IN);
-        viewModel.setIsSigningIn(true);
-
+        viewModel.setSignIn(true);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_SIGN_IN) {
-            viewModel.setIsSigningIn(false);
+            viewModel.setSignIn(false);
             if (resultCode != RESULT_OK && shouldStartSignIn()) {
                 startSignIn();
             }
@@ -212,8 +207,8 @@ public class MainActivity extends AppCompatActivity implements
         this.query = query;
         adapter.setQuery(query);
         // Set header
-        tvCurrentSearch.setText(Html.fromHtml(filters.getSearchDescription(this)));
-        tvCurrentSort.setText(filters.getOrderDescription(this));
+        tvCurrentFilter.setText(Html.fromHtml(filters.getSearchDescription(this)));
+        tvCurrentSortBy.setText(filters.getOrderDescription(this));
         // Save filters
         viewModel.setFilters(filters);
     }
@@ -233,26 +228,14 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.menu_sign_out:
                 AuthUI.getInstance().signOut(this);
                 user = null;
-                viewModel.setIsSigningIn(false);
+                viewModel.setSignIn(false);
                 onStart();
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.cv_bar:
-                onFilterClicked();
-                break;
-            case R.id.bn_clear_filter:
-                onClearFilterClicked();
-        }
-    }
-
     public void onFilterClicked() {
-        // Show the dialog containing filter options
         filterDialog.show(getSupportFragmentManager(), FilterDialogFragment.TAG);
     }
 
@@ -261,11 +244,15 @@ public class MainActivity extends AppCompatActivity implements
         onFilter(Filters.getDefault());
     }
 
-    @Override
-    public void onRestaurantSelected(DocumentSnapshot restaurant) {
-        Intent intent = new Intent(this, RestaurantDetailActivity.class);
-        intent.putExtra(RestaurantDetailActivity.KEY_RESTAURANT_ID, restaurant.getId());
-        intent.putExtra(RestaurantDetailActivity.KEY_USER_ID, user.getUid());
-        startActivity(intent);
+    @OnClick({R.id.bnFilter, R.id.cvBar})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.bnFilter:
+                onClearFilterClicked();
+                break;
+            case R.id.cvBar:
+                onFilterClicked();
+                break;
+        }
     }
 }

@@ -52,12 +52,10 @@ public class RestaurantRepo {
         String[] cities = context.getResources().getStringArray(R.array.cities);
         cities = Arrays.copyOfRange(cities, 1, cities.length);
 
-        // Categories (first element is 'Any')
+        // Categories (because first elemnt is 'Any', so take from index 1)
         String[] categories = context.getResources().getStringArray(R.array.categories);
         categories = Arrays.copyOfRange(categories, 1, categories.length);
-
         int[] prices = new int[]{1, 2, 3};
-
         restaurant.setName(getRandomName(random));
         restaurant.setCity(getRandomString(cities, random));
         restaurant.setCategory(getRandomString(categories, random));
@@ -65,10 +63,8 @@ public class RestaurantRepo {
         restaurant.setPrice(getRandomInt(prices, random));
         restaurant.setAvgRating(getRandomRating(random));
         restaurant.setNumRatings(random.nextInt(20));
-
         return restaurant;
     }
-
 
     private static String getRandomImageUrl(Random random) {
         int id = random.nextInt(MAX_IMAGE_NUM) + 1;

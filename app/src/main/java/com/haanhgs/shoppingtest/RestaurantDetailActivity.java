@@ -3,16 +3,13 @@ package com.haanhgs.shoppingtest;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -25,112 +22,115 @@ import com.haanhgs.shoppingtest.adapter.RatingAdapter;
 import com.haanhgs.shoppingtest.model.Rating;
 import com.haanhgs.shoppingtest.model.Restaurant;
 import com.haanhgs.shoppingtest.repo.RestaurantRepo;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 
 public class RestaurantDetailActivity extends AppCompatActivity implements
-        View.OnClickListener,
         EventListener<DocumentSnapshot>,
         RatingDialogFragment.RatingListener {
+
+    @BindView(R.id.ivRestaurant)
+    ImageView ivRestaurant;
+    @BindView(R.id.ivBack)
+    ImageView ivBack;
+    @BindView(R.id.tvName)
+    TextView tvName;
+    @BindView(R.id.mrbRestaurant)
+    MaterialRatingBar mrbRestaurant;
+    @BindView(R.id.tvNumRating)
+    TextView tvNumRating;
+    @BindView(R.id.tvCategory)
+    TextView tvCategory;
+    @BindView(R.id.tvCity)
+    TextView tvCity;
+    @BindView(R.id.tvPrice)
+    TextView tvPrice;
+    @BindView(R.id.fabRestaurant)
+    FloatingActionButton fabRestaurant;
+    @BindView(R.id.rvRestaurant)
+    RecyclerView rvRestaurant;
+    @BindView(R.id.lnEmpty)
+    LinearLayout lnEmpty;
 
     private static final String TAG = "RestaurantDetail";
     public static final String KEY_RESTAURANT_ID = "key_restaurant_id";
     public static final String KEY_USER_ID = "key_user_id";
-    private ImageView imageView;
-    private TextView nameView;
-    private MaterialRatingBar ratingIndicator;
-    private TextView numRatingsView;
-    private TextView cityView;
-    private TextView categoryView;
-    private TextView priceView;
-    private ViewGroup emptyView;
-    private RecyclerView ratingsRecycler;
+
     private RatingDialogFragment ratingDialog;
     private FirebaseFirestore firestore;
     private DocumentReference restaurantRef;
     private ListenerRegistration restaurantRegistration;
     private RatingAdapter ratingAdapter;
+    private String restaurantId;
+    private String uId;
 
-    private void initViews(){
-        imageView = findViewById(R.id.restaurant_image);
-        nameView = findViewById(R.id.restaurant_name);
-        ratingIndicator = findViewById(R.id.restaurant_rating);
-        numRatingsView = findViewById(R.id.restaurant_num_ratings);
-        cityView = findViewById(R.id.restaurant_city);
-        categoryView = findViewById(R.id.restaurant_category);
-        priceView = findViewById(R.id.restaurant_price);
-        emptyView = findViewById(R.id.view_empty_ratings);
-        ratingsRecycler = findViewById(R.id.recycler_ratings);
-
-        findViewById(R.id.restaurant_button_back).setOnClickListener(this);
-        findViewById(R.id.fab_show_rating_dialog).setOnClickListener(this);
+    private void initFireStore(){
+        firestore = FirebaseFirestore.getInstance();
+        restaurantRef = firestore.collection("app").document(uId)
+                .collection("test").document(restaurantId);
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.restaurant_button_back:
-                onBackArrowClicked(v);
-                break;
-            case R.id.fab_show_rating_dialog:
-                onAddRatingClicked(v);
-                break;
+    private void getIntentResult(){
+        // Get restaurant ID from extras
+        String restaurantTemp = null;
+        String uIdTemp = null;
+        if (getIntent().getExtras() != null) {
+            restaurantTemp = getIntent().getExtras().getString(KEY_RESTAURANT_ID);
+            uIdTemp = getIntent().getExtras().getString(KEY_USER_ID);
         }
+        if (restaurantTemp == null || uIdTemp == null) {
+            onBackPressed();
+            throw new IllegalArgumentException("Must pass extra " + KEY_RESTAURANT_ID);
+        }else {
+            restaurantId = restaurantTemp;
+            uId = uIdTemp;
+        }
+    }
+
+    private void initAdapter(){
+        Query ratingsQuery = restaurantRef
+                .collection("ratings")
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .limit(MainActivity.LIMIT);
+        ratingAdapter = new RatingAdapter(ratingsQuery) {
+            @Override
+            protected void onDataChanged() {
+                if (getItemCount() == 0) {
+                    rvRestaurant.setVisibility(View.GONE);
+                    lnEmpty.setVisibility(View.VISIBLE);
+                } else {
+                    rvRestaurant.setVisibility(View.VISIBLE);
+                    lnEmpty.setVisibility(View.GONE);
+                }
+            }
+        };
+    }
+
+    private void initRecyclerView(){
+        rvRestaurant.setLayoutManager(new LinearLayoutManager(this));
+        rvRestaurant.setAdapter(ratingAdapter);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant_detail);
-        initViews();
-
-
-        // Get restaurant ID from extras
-        String restaurantId = null;
-        String uId = null;
-        if (getIntent().getExtras() != null){
-            restaurantId = getIntent().getExtras().getString(KEY_RESTAURANT_ID);
-            uId = getIntent().getExtras().getString(KEY_USER_ID);
-        }
-        if (restaurantId == null || uId == null) {
-            onBackPressed();
-            throw new IllegalArgumentException("Must pass extra " + KEY_RESTAURANT_ID);
-        }
-        // Initialize Firestore
-        firestore = FirebaseFirestore.getInstance();
-
-        // Get reference to the restaurant
-        restaurantRef = firestore.collection("app").document(uId).collection("test").document(restaurantId);
-
-        // Get ratings
-        Query ratingsQuery = restaurantRef
-                .collection("ratings")
-                .orderBy("timestamp", Query.Direction.DESCENDING)
-                .limit(MainActivity.LIMIT);
-
-        // RecyclerView
-        ratingAdapter = new RatingAdapter(ratingsQuery) {
-            @Override
-            protected void onDataChanged() {
-                if (getItemCount() == 0) {
-                    ratingsRecycler.setVisibility(View.GONE);
-                    emptyView.setVisibility(View.VISIBLE);
-                } else {
-                    ratingsRecycler.setVisibility(View.VISIBLE);
-                    emptyView.setVisibility(View.GONE);
-                }
-            }
-        };
-
-        ratingsRecycler.setLayoutManager(new LinearLayoutManager(this));
-        ratingsRecycler.setAdapter(ratingAdapter);
-
+        ButterKnife.bind(this);
+        getIntentResult();
+        initFireStore();
+        initAdapter();
+        initRecyclerView();
         ratingDialog = new RatingDialogFragment();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-
         ratingAdapter.startListening();
         restaurantRegistration = restaurantRef.addSnapshotListener(this);
     }
@@ -138,9 +138,7 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
     @Override
     public void onStop() {
         super.onStop();
-
         ratingAdapter.stopListening();
-
         if (restaurantRegistration != null) {
             restaurantRegistration.remove();
             restaurantRegistration = null;
@@ -157,7 +155,7 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
             Restaurant restaurant = transaction.get(restaurantRef).toObject(Restaurant.class);
 
             // Compute new number of ratings
-            if (restaurant != null){
+            if (restaurant != null) {
                 int newNumRatings = restaurant.getNumRatings() + 1;
                 // Compute new average rating
                 double oldRatingTotal = restaurant.getAvgRating() *
@@ -188,13 +186,35 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
     }
 
     private void onRestaurantLoaded(Restaurant restaurant) {
-        nameView.setText(restaurant.getName());
-        ratingIndicator.setRating((float) restaurant.getAvgRating());
-        numRatingsView.setText(getString(R.string.fmt_num_ratings, restaurant.getNumRatings()));
-        cityView.setText(restaurant.getCity());
-        categoryView.setText(restaurant.getCategory());
-        priceView.setText(RestaurantRepo.getPriceString(restaurant));
-        Glide.with(imageView.getContext()).load(restaurant.getPhoto()).into(imageView);
+        tvName.setText(restaurant.getName());
+        mrbRestaurant.setRating((float) restaurant.getAvgRating());
+        tvNumRating.setText(getString(R.string.fmt_num_ratings, restaurant.getNumRatings()));
+        tvCity.setText(restaurant.getCity());
+        tvCategory.setText(restaurant.getCategory());
+        tvPrice.setText(RestaurantRepo.getPriceString(restaurant));
+        Glide.with(ivRestaurant.getContext()).load(restaurant.getPhoto()).into(ivRestaurant);
+    }
+
+    @Override
+    public void onRating(Rating rating) {
+        addRating(restaurantRef, rating).addOnSuccessListener(this, aVoid -> {
+            Log.d(TAG, "Rating added");
+            hideKeyboard();
+            rvRestaurant.smoothScrollToPosition(0);
+        }).addOnFailureListener(this, e -> {
+            Log.w(TAG, "Add rating failed", e);
+            hideKeyboard();
+            Snackbar.make(findViewById(android.R.id.content), "Failed to add rating",
+                    Snackbar.LENGTH_SHORT).show();
+        });
+    }
+
+    private void hideKeyboard() {
+        View view = getCurrentFocus();
+        InputMethodManager manager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        if (view != null && manager != null) {
+            manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     public void onBackArrowClicked(View view) {
@@ -205,25 +225,15 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
         ratingDialog.show(getSupportFragmentManager(), RatingDialogFragment.TAG);
     }
 
-    @Override
-    public void onRating(Rating rating) {
-        addRating(restaurantRef, rating).addOnSuccessListener(this, aVoid -> {
-                    Log.d(TAG, "Rating added");
-                    hideKeyboard();
-                    ratingsRecycler.smoothScrollToPosition(0);
-        }).addOnFailureListener(this, e -> {
-                    Log.w(TAG, "Add rating failed", e);
-                    hideKeyboard();
-                    Snackbar.make(findViewById(android.R.id.content), "Failed to add rating",
-                            Snackbar.LENGTH_SHORT).show();
-        });
-    }
-
-    private void hideKeyboard() {
-        View view = getCurrentFocus();
-        InputMethodManager manager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
-        if (view != null && manager != null) {
-            manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    @OnClick({R.id.ivBack, R.id.fabRestaurant})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.ivBack:
+                onBackArrowClicked(view);
+                break;
+            case R.id.fabRestaurant:
+                onAddRatingClicked(view);
+                break;
         }
     }
 }

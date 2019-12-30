@@ -6,7 +6,6 @@ import com.google.firebase.firestore.Query;
 import com.haanhgs.shoppingtest.R;
 import com.haanhgs.shoppingtest.model.Restaurant;
 
-
 public class Filters {
 
     private String category = null;
@@ -21,7 +20,6 @@ public class Filters {
         Filters filters = new Filters();
         filters.setSortBy(Restaurant.FIELD_AVG_RATING);
         filters.setSortDirection(Query.Direction.DESCENDING);
-
         return filters;
     }
 
