@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity implements
     public static final int LIMIT = 50;
     private static final String TAG = "MainActivity";
     private static final int RC_SIGN_IN = 9001;
-    private Toolbar toolbar;
     private TextView tvCurrentSearch;
     private TextView tvCurrentSort;
     private RecyclerView restaurantsRecycler;
@@ -50,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements
     private FirebaseUser user;
 
     private void initToolbar(){
-        toolbar = findViewById(R.id.tbr_main);
+        Toolbar toolbar = findViewById(R.id.tbr_main);
         setSupportActionBar(toolbar);
     }
 

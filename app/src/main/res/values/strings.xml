@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">ShoppingTest</string>
 
     <string name="value_any_category">All food</string>
@@ -9,15 +9,15 @@
     <string name="price_2">$$</string>
     <string name="price_3">$$$</string>
 
-    <string name="label_category">Category</string>
-    <string name="label_city">City</string>
-    <string name="label_price">Price</string>
-    <string name="label_sort_by">Sort By</string>
+    <string name="label_category" tools:keep="@string/label_category">Category</string>
+    <string name="label_city" tools:keep="@string/label_city">City</string>
+    <string name="label_price" tools:keep="@string/label_price">Price</string>
+    <string name="label_sort_by" tools:keep="@string/label_sort_by">Sort By</string>
 
     <string name="fmt_num_ratings" translatable="false">(%d)</string>
     <string name="all_restaurants">All Restaurants</string>
     <string name="header_filters">Filter</string>
-    <string name="search">Search</string>
+    <string name="search" tools:keep="@string/search">Search</string>
 
     <string name="sort_by_rating">Sort by Rating</string>
     <string name="sort_by_popularity">Sort by Popularity</string>
@@ -29,7 +29,7 @@
 
     <string name="add_random_items">Add Random Items</string>
     <string name="sign_out">Sign Out</string>
-    <string name="delete_all">Delete All</string>
+    <string name="delete_all" tools:keep="@string/delete_all">Delete All</string>
     <string name="divider_bullet">•</string>
     <string name="apply">Apply</string>
     <string name="cancel">Cancel</string>
@@ -38,9 +38,9 @@
     <string name="hint_review">How was your experience?</string>
     <string name="submit">Submit</string>
     <string name="filter_add_review">Add review</string>
-    <string name="bnOk">OK</string>
-    <string name="tvInform">Inform</string>
-    <string name="newTag">Tag tag</string>
+    <string name="bnOk" tools:keep="@string/bnOk">OK</string>
+    <string name="tvInform" tools:keep="@string/tvInform">Inform</string>
+    <string name="newTag" tools:keep="@string/newTag">Tag tag</string>
 
     <!-- Types of food I could think of in 5 minutes -->
     <string-array name="categories">

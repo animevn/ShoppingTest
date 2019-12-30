@@ -6,7 +6,9 @@
     android:id="@+id/fl_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.haanhgs.shoppingtest.MainActivity">
+    tools:context="com.haanhgs.shoppingtest.MainActivity"
+    tools:ignore="MergeRootFrame"
+    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_main"
