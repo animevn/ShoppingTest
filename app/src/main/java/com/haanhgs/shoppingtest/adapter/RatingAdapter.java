@@ -4,11 +4,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.firestore.Query;
 import com.haanhgs.shoppingtest.R;
 import com.haanhgs.shoppingtest.model.Rating;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 
 public class RatingAdapter extends FirestoreAdapter<RatingAdapter.ViewHolder> {
@@ -27,28 +29,32 @@ public class RatingAdapter extends FirestoreAdapter<RatingAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Rating rating = getSnapshot(position).toObject(Rating.class);
-        if (rating != null){
+        if (rating != null) {
             holder.bind(rating);
         }
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        final TextView tvName;
-        final MaterialRatingBar ratingBar;
-        final TextView tvContent;
+        @BindView(R.id.tv_rating_name)
+        TextView tvRatingName;
+        @BindView(R.id.tv_rating_date)
+        TextView tvRatingDate;
+        @BindView(R.id.ratingbar_rating_dialog)
+        MaterialRatingBar ratingbarRatingDialog;
+        @BindView(R.id.tv_rating_content)
+        TextView tvRatingContent;
+
 
         public ViewHolder(View itemView) {
             super(itemView);
-            tvName = itemView.findViewById(R.id.tv_rating_name);
-            ratingBar = itemView.findViewById(R.id.ratingbar_rating_dialog);
-            tvContent = itemView.findViewById(R.id.tv_rating_content);
+            ButterKnife.bind(this, itemView);
         }
 
         public void bind(Rating rating) {
-            tvName.setText(rating.getUserName());
-            ratingBar.setRating((float) rating.getRating());
-            tvContent.setText(rating.getText());
+            tvRatingName.setText(rating.getUserName());
+            ratingbarRatingDialog.setRating((float) rating.getRating());
+            tvRatingContent.setText(rating.getText());
         }
     }
 

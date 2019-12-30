@@ -56,11 +56,6 @@ public class RatingDialogFragment extends DialogFragment implements View.OnClick
         if (getDialog() != null && getDialog().getWindow() != null){
             getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         }
-//        if (getDialog() != null && getDialog().getWindow() != null){
-//            getDialog().getWindow().setLayout(
-//                    ViewGroup.LayoutParams.MATCH_PARENT,
-//                    ViewGroup.LayoutParams.WRAP_CONTENT);
-//        }
     }
 
     @Override

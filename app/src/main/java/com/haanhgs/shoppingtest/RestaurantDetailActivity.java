@@ -7,13 +7,11 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
-import androidx.annotation.NonNull;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.DocumentReference;
@@ -23,7 +21,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.Transaction;
 import com.haanhgs.shoppingtest.adapter.RatingAdapter;
 import com.haanhgs.shoppingtest.model.Rating;
 import com.haanhgs.shoppingtest.model.Restaurant;
@@ -156,33 +153,27 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
                 .document();
 
         // In a transaction, add the new rating and update the aggregate totals
-        return firestore.runTransaction(new Transaction.Function<Void>() {
-            @Override
-            public Void apply(@NonNull Transaction transaction)
-                    throws FirebaseFirestoreException {
+        return firestore.runTransaction(transaction -> {
+            Restaurant restaurant = transaction.get(restaurantRef).toObject(Restaurant.class);
 
-                Restaurant restaurant = transaction.get(restaurantRef)
-                        .toObject(Restaurant.class);
+            // Compute new number of ratings
+            if (restaurant != null){
+                int newNumRatings = restaurant.getNumRatings() + 1;
+                // Compute new average rating
+                double oldRatingTotal = restaurant.getAvgRating() *
+                        restaurant.getNumRatings();
+                double newAvgRating = (oldRatingTotal + rating.getRating()) /
+                        newNumRatings;
 
-                // Compute new number of ratings
-                if (restaurant != null){
-                    int newNumRatings = restaurant.getNumRatings() + 1;
-                    // Compute new average rating
-                    double oldRatingTotal = restaurant.getAvgRating() *
-                            restaurant.getNumRatings();
-                    double newAvgRating = (oldRatingTotal + rating.getRating()) /
-                            newNumRatings;
+                // Set new restaurant info
+                restaurant.setNumRatings(newNumRatings);
+                restaurant.setAvgRating(newAvgRating);
 
-                    // Set new restaurant info
-                    restaurant.setNumRatings(newNumRatings);
-                    restaurant.setAvgRating(newAvgRating);
-
-                    // Commit to Firestore
-                    transaction.set(restaurantRef, restaurant);
-                    transaction.set(ratingRef, rating);
-                }
-                return null;
+                // Commit to Firestore
+                transaction.set(restaurantRef, restaurant);
+                transaction.set(ratingRef, rating);
             }
+            return null;
         });
     }
 
@@ -203,10 +194,7 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
         cityView.setText(restaurant.getCity());
         categoryView.setText(restaurant.getCategory());
         priceView.setText(RestaurantRepo.getPriceString(restaurant));
-        // Background image
-        Glide.with(imageView.getContext())
-                .load(restaurant.getPhoto())
-                .into(imageView);
+        Glide.with(imageView.getContext()).load(restaurant.getPhoto()).into(imageView);
     }
 
     public void onBackArrowClicked(View view) {
@@ -219,26 +207,16 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
 
     @Override
     public void onRating(Rating rating) {
-        addRating(restaurantRef, rating)
-                .addOnSuccessListener(this, new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "Rating added");
-
-                        hideKeyboard();
-                        ratingsRecycler.smoothScrollToPosition(0);
-                    }
-                })
-                .addOnFailureListener(this, new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Add rating failed", e);
-
-                        hideKeyboard();
-                        Snackbar.make(findViewById(android.R.id.content), "Failed to add rating",
-                                Snackbar.LENGTH_SHORT).show();
-                    }
-                });
+        addRating(restaurantRef, rating).addOnSuccessListener(this, aVoid -> {
+                    Log.d(TAG, "Rating added");
+                    hideKeyboard();
+                    ratingsRecycler.smoothScrollToPosition(0);
+        }).addOnFailureListener(this, e -> {
+                    Log.w(TAG, "Add rating failed", e);
+                    hideKeyboard();
+                    Snackbar.make(findViewById(android.R.id.content), "Failed to add rating",
+                            Snackbar.LENGTH_SHORT).show();
+        });
     }
 
     private void hideKeyboard() {

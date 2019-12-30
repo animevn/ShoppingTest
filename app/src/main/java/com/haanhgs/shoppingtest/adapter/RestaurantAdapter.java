@@ -6,14 +6,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.haanhgs.shoppingtest.R;
 import com.haanhgs.shoppingtest.model.Restaurant;
 import com.haanhgs.shoppingtest.repo.RestaurantRepo;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 
 public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHolder> {
@@ -22,13 +26,12 @@ public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHo
         void onRestaurantSelected(DocumentSnapshot restaurant);
     }
 
-    private final OnRestaurantSelectedListener mListener;
+    private final OnRestaurantSelectedListener listener;
 
     public RestaurantAdapter(Query query, OnRestaurantSelectedListener listener) {
         super(query);
-        mListener = listener;
+        this.listener = listener;
     }
-
 
     @NonNull
     @Override
@@ -39,28 +42,29 @@ public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(getSnapshot(position), mListener);
+        holder.bind(getSnapshot(position), listener);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        final ImageView ivImage;
-        final TextView tvName;
-        final MaterialRatingBar ratingBar;
-        final TextView tvNumRating;
-        final TextView tvPrice;
-        final TextView tvCategory;
-        final TextView tvCity;
+        @BindView(R.id.iv_restaurant_image)
+        ImageView ivRestaurantImage;
+        @BindView(R.id.tv_restaurant_name)
+        TextView tvRestaurantName;
+        @BindView(R.id.tv_restaurant_price)
+        TextView tvRestaurantPrice;
+        @BindView(R.id.ratingbar_restaurant)
+        MaterialRatingBar ratingbarRestaurant;
+        @BindView(R.id.tv_restaurant_num_rating)
+        TextView tvRestaurantNumRating;
+        @BindView(R.id.tv_restaurant_category)
+        TextView tvRestaurantCategory;
+        @BindView(R.id.tv_restaurant_city)
+        TextView tvRestaurantCity;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            ivImage = itemView.findViewById(R.id.iv_restaurant_image);
-            tvName = itemView.findViewById(R.id.tv_restaurant_name);
-            ratingBar = itemView.findViewById(R.id.ratingbar_restaurant);
-            tvNumRating = itemView.findViewById(R.id.tv_restaurant_num_rating);
-            tvPrice = itemView.findViewById(R.id.tv_restaurant_price);
-            tvCategory = itemView.findViewById(R.id.tv_restaurant_category);
-            tvCity = itemView.findViewById(R.id.tv_restaurant_city);
+            ButterKnife.bind(this, itemView);
         }
 
         public void bind(final DocumentSnapshot snapshot,
@@ -68,26 +72,21 @@ public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHo
 
             Restaurant restaurant = snapshot.toObject(Restaurant.class);
             Resources resources = itemView.getResources();
-            if (restaurant != null){
-                // Load image
-                Glide.with(ivImage.getContext())
+            if (restaurant != null) {
+                Glide.with(ivRestaurantImage.getContext())
                         .load(restaurant.getPhoto())
-                        .into(ivImage);
-                tvName.setText(restaurant.getName());
-                ratingBar.setRating((float) restaurant.getAvgRating());
-                tvCity.setText(restaurant.getCity());
-                tvCategory.setText(restaurant.getCategory());
-                tvNumRating.setText(resources.getString(R.string.fmt_num_ratings,
+                        .into(ivRestaurantImage);
+                tvRestaurantName.setText(restaurant.getName());
+                ratingbarRestaurant.setRating((float) restaurant.getAvgRating());
+                tvRestaurantCity.setText(restaurant.getCity());
+                tvRestaurantCategory.setText(restaurant.getCategory());
+                tvRestaurantNumRating.setText(resources.getString(R.string.fmt_num_ratings,
                         restaurant.getNumRatings()));
-                tvPrice.setText(RestaurantRepo.getPriceString(restaurant));
+                tvRestaurantPrice.setText(RestaurantRepo.getPriceString(restaurant));
             }
-            // Click listener
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (listener != null) {
-                        listener.onRestaurantSelected(snapshot);
-                    }
+            itemView.setOnClickListener(view -> {
+                if (listener != null) {
+                    listener.onRestaurantSelected(snapshot);
                 }
             });
         }

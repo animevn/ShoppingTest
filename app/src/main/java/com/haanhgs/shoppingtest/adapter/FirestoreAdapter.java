@@ -23,6 +23,10 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
         this.query = query;
     }
 
+    protected DocumentSnapshot getSnapshot(int index) {
+        return snapshots.get(index);
+    }
+
     public void startListening() {
         if (query != null && registration == null) {
             registration = query.addSnapshotListener(this);
@@ -34,20 +38,14 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
             registration.remove();
             registration = null;
         }
-
         snapshots.clear();
         notifyDataSetChanged();
     }
 
     public void setQuery(Query query) {
-        // Stop listening
         stopListening();
-
-        // Clear existing data
         snapshots.clear();
         notifyDataSetChanged();
-
-        // Listen to new query
         this.query = query;
         startListening();
     }
@@ -57,45 +55,11 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
         return snapshots.size();
     }
 
-    protected DocumentSnapshot getSnapshot(int index) {
-        return snapshots.get(index);
-    }
-
     @SuppressWarnings("EmptyMethod")
     protected void onError(FirebaseFirestoreException e) {}
 
+    @SuppressWarnings("EmptyMethod")
     protected void onDataChanged() {}
-
-    @Override
-    public void onEvent(QuerySnapshot documentSnapshots,
-                        FirebaseFirestoreException e) {
-
-        // Handle errors
-        if (e != null) {
-            Log.w(TAG, "onEvent:error", e);
-            return;
-        }
-
-        // Dispatch the event
-        for (DocumentChange change : documentSnapshots.getDocumentChanges()) {
-            // Snapshot of the changed document
-            DocumentSnapshot snapshot = change.getDocument();
-
-            switch (change.getType()) {
-                case ADDED:
-                    onDocumentAdded(change);
-                    break;
-                case MODIFIED:
-                    onDocumentModified(change);
-                    break;
-                case REMOVED:
-                    onDocumentRemoved(change);
-                    break;
-            }
-        }
-
-        onDataChanged();
-    }
 
     protected void onDocumentAdded(DocumentChange change) {
         snapshots.add(change.getNewIndex(), change.getDocument());
@@ -104,11 +68,9 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
 
     protected void onDocumentModified(DocumentChange change) {
         if (change.getOldIndex() == change.getNewIndex()) {
-            // Item changed but remained in same position
             snapshots.set(change.getOldIndex(), change.getDocument());
             notifyItemChanged(change.getOldIndex());
         } else {
-            // Item changed and changed position
             snapshots.remove(change.getOldIndex());
             snapshots.add(change.getNewIndex(), change.getDocument());
             notifyItemMoved(change.getOldIndex(), change.getNewIndex());
@@ -121,4 +83,27 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
     }
 
 
+    @Override
+    public void onEvent(QuerySnapshot documentSnapshots,
+                        FirebaseFirestoreException e) {
+        if (e != null) {
+            Log.w(TAG, "onEvent:error", e);
+            return;
+        }
+        for (DocumentChange change : documentSnapshots.getDocumentChanges()) {
+            DocumentSnapshot snapshot = change.getDocument();
+            switch (change.getType()) {
+                case ADDED:
+                    onDocumentAdded(change);
+                    break;
+                case MODIFIED:
+                    onDocumentModified(change);
+                    break;
+                case REMOVED:
+                    onDocumentRemoved(change);
+                    break;
+            }
+        }
+        onDataChanged();
+    }
 }

@@ -1,10 +1,8 @@
 package com.haanhgs.shoppingtest.repo;
 
 import android.content.Context;
-
 import com.haanhgs.shoppingtest.R;
 import com.haanhgs.shoppingtest.model.Restaurant;
-
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Random;
@@ -16,7 +14,7 @@ public class RestaurantRepo {
 
     private static final String TAG = "RestaurantRepo";
     private static final ThreadPoolExecutor EXECUTOR = new ThreadPoolExecutor(2, 4, 60,
-            TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+            TimeUnit.SECONDS, new LinkedBlockingQueue<>());
 
     private static final String RESTAURANT_URL_FMT =
             "https://storage.googleapis.com/firestorequickstarts.appspot.com/food_%d.png";
@@ -46,14 +44,11 @@ public class RestaurantRepo {
     };
 
 
-    /**
-     * Create a random Restaurant POJO.
-     */
     public static Restaurant getRandom(Context context) {
         Restaurant restaurant = new Restaurant();
         Random random = new Random();
 
-        // Cities (first elemnt is 'Any')
+        // Cities (because first elemnt is 'Any', so take from index 1)
         String[] cities = context.getResources().getStringArray(R.array.cities);
         cities = Arrays.copyOfRange(cities, 1, cities.length);
 
@@ -75,25 +70,15 @@ public class RestaurantRepo {
     }
 
 
-    /**
-     * Get a random image.
-     */
     private static String getRandomImageUrl(Random random) {
-        // Integer between 1 and MAX_IMAGE_NUM (inclusive)
         int id = random.nextInt(MAX_IMAGE_NUM) + 1;
         return String.format(Locale.getDefault(), RESTAURANT_URL_FMT, id);
     }
 
-    /**
-     * Get price represented as dollar signs.
-     */
     public static String getPriceString(Restaurant restaurant) {
         return getPriceString(restaurant.getPrice());
     }
 
-    /**
-     * Get price represented as dollar signs.
-     */
     public static String getPriceString(int priceInt) {
         switch (priceInt) {
             case 1:

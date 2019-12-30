@@ -45,7 +45,6 @@
     <!-- Types of food I could think of in 5 minutes -->
     <string-array name="categories">
         <item>@string/value_any_category</item>
-
         <item>Brunch</item>
         <item>Burgers</item>
         <item>Coffee</item>
@@ -64,7 +63,6 @@
     <!-- 50 most populous cities in the US -->
     <string-array name="cities">
         <item>@string/value_any_city</item>
-
         <item>Albuquerque</item>
         <item>Arlington</item>
         <item>Atlanta</item>
@@ -117,7 +115,6 @@
     <!-- Price filters -->
     <string-array name="prices">
         <item>@string/value_any_price</item>
-
         <item>@string/price_1</item>
         <item>@string/price_2</item>
         <item>@string/price_3</item>

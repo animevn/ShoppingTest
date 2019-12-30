@@ -1,15 +1,10 @@
 package com.haanhgs.shoppingtest.model;
 
 import android.text.TextUtils;
-
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.ServerTimestamp;
-
 import java.util.Date;
 
-/**
- * Model POJO for a rating.
- */
 public class Rating {
 
     private String userId;

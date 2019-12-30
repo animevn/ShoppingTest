@@ -37,10 +37,14 @@ public class MainActivity extends AppCompatActivity implements
     public static final int LIMIT = 50;
     private static final String TAG = "MainActivity";
     private static final int RC_SIGN_IN = 9001;
+
+
     private TextView tvCurrentSearch;
     private TextView tvCurrentSort;
     private RecyclerView restaurantsRecycler;
     private ViewGroup emptyView;
+
+
     private FirebaseFirestore firestore;
     private Query query;
     private FilterDialogFragment filterDialog;
@@ -110,14 +114,10 @@ public class MainActivity extends AppCompatActivity implements
         initToolbar();
         initViews();
         initFilterBarClick();
-        // View model
         viewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
-        // Enable Firestore logging
         FirebaseFirestore.setLoggingEnabled(true);
-        // Initialize Firestore and the main RecyclerView
         initFirestore();
         initRecyclerView();
-        // Filter Dialog
         filterDialog = new FilterDialogFragment();
     }
 
@@ -126,16 +126,13 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void startUpdateData(){
-        // Apply filters
         onFilter(viewModel.getFilters());
-        // Start listening for Firestore updates
         if (adapter != null) {
             adapter.startListening();
         }
     }
 
     private void startSignIn() {
-        // Sign in with FirebaseUI
         Intent intent = AuthUI.getInstance().createSignInIntentBuilder()
                 .setAvailableProviders(Collections.singletonList(
                         new AuthUI.IdpConfig.EmailBuilder().build()))
@@ -162,7 +159,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onStart() {
         super.onStart();
-        // Start sign in if necessary
         if (shouldStartSignIn()) {
             startSignIn();
             return;
