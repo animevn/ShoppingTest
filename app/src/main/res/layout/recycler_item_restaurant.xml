@@ -8,7 +8,7 @@
     android:orientation="vertical">
 
     <ImageView
-        android:id="@+id/iv_restaurant_image"
+        android:id="@+id/ivImage"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginStart="8dp"
@@ -23,7 +23,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tv_restaurant_name"
+        android:id="@+id/tvName"
         style="@style/AppTheme.Subheader"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -32,14 +32,14 @@
         android:layout_marginEnd="16dp"
         android:ellipsize="end"
         android:maxLines="1"
-        app:layout_constraintEnd_toStartOf="@+id/tv_restaurant_price"
-        app:layout_constraintStart_toEndOf="@+id/iv_restaurant_image"
+        app:layout_constraintEnd_toStartOf="@+id/tvPrice"
+        app:layout_constraintStart_toEndOf="@+id/ivImage"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Foo's Bar" />
 
 
     <TextView
-        android:id="@+id/tv_restaurant_price"
+        android:id="@+id/tvPrice"
         style="@style/AppTheme.Caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -51,43 +51,43 @@
         tools:text="$$$" />
 
     <me.zhanghai.android.materialratingbar.MaterialRatingBar
-        android:id="@+id/ratingbar_restaurant"
+        android:id="@+id/mrbRestaurant"
         style="@style/Widget.MaterialRatingBar.RatingBar.Indicator.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tv_restaurant_name"
-        android:layout_alignStart="@+id/tv_restaurant_name"
-        app:layout_constraintBottom_toTopOf="@+id/tv_restaurant_category"
-        app:layout_constraintStart_toStartOf="@+id/tv_restaurant_name"
-        app:layout_constraintTop_toBottomOf="@+id/tv_restaurant_name" />
+        android:layout_below="@+id/tvName"
+        android:layout_alignStart="@+id/tvName"
+        app:layout_constraintBottom_toTopOf="@+id/tvCategory"
+        app:layout_constraintStart_toStartOf="@+id/tvName"
+        app:layout_constraintTop_toBottomOf="@+id/tvName" />
 
     <TextView
-        android:id="@+id/tv_restaurant_num_rating"
+        android:id="@+id/tvNumRating"
         style="@style/AppTheme.Caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/ratingbar_restaurant"
-        android:layout_alignBottom="@+id/ratingbar_restaurant"
+        android:layout_alignTop="@+id/mrbRestaurant"
+        android:layout_alignBottom="@+id/mrbRestaurant"
         android:layout_marginStart="8dp"
-        android:layout_toEndOf="@+id/ratingbar_restaurant"
+        android:layout_toEndOf="@+id/mrbRestaurant"
         android:gravity="center_vertical"
         android:textColor="@color/greyDisabled"
-        app:layout_constraintBottom_toBottomOf="@+id/ratingbar_restaurant"
-        app:layout_constraintStart_toEndOf="@+id/ratingbar_restaurant"
-        app:layout_constraintTop_toTopOf="@+id/ratingbar_restaurant"
+        app:layout_constraintBottom_toBottomOf="@+id/mrbRestaurant"
+        app:layout_constraintStart_toEndOf="@+id/mrbRestaurant"
+        app:layout_constraintTop_toTopOf="@+id/mrbRestaurant"
         tools:text="(10)" />
 
     <TextView
-        android:id="@+id/tv_restaurant_category"
+        android:id="@+id/tvCategory"
         style="@style/AppTheme.Body1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/ratingbar_restaurant"
-        android:layout_alignStart="@+id/tv_restaurant_name"
+        android:layout_below="@+id/mrbRestaurant"
+        android:layout_alignStart="@+id/tvName"
         android:layout_marginBottom="8dp"
         android:textColor="@color/greySecondary"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/ratingbar_restaurant"
+        app:layout_constraintStart_toStartOf="@+id/mrbRestaurant"
         tools:text="Italian" />
 
     <TextView
@@ -98,22 +98,22 @@
         android:layout_marginBottom="8dp"
         android:text="@string/divider_bullet"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tv_restaurant_category"
-        app:layout_constraintTop_toBottomOf="@+id/ratingbar_restaurant"
+        app:layout_constraintStart_toEndOf="@+id/tvCategory"
+        app:layout_constraintTop_toBottomOf="@+id/mrbRestaurant"
         app:layout_constraintVertical_bias="1.0" />
 
     <TextView
-        android:id="@+id/tv_restaurant_city"
+        android:id="@+id/tvCity"
         style="@style/AppTheme.Body1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/tv_restaurant_category"
+        android:layout_alignTop="@+id/tvCategory"
         android:layout_marginStart="2dp"
         android:layout_toEndOf="@+id/tv_divider"
         android:textColor="@color/greySecondary"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_restaurant_category"
+        app:layout_constraintBottom_toBottomOf="@+id/tvCategory"
         app:layout_constraintStart_toEndOf="@+id/tv_divider"
-        app:layout_constraintTop_toTopOf="@+id/tv_restaurant_category"
+        app:layout_constraintTop_toTopOf="@+id/tvCategory"
         tools:text="San Francisco" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

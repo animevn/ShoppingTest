@@ -36,13 +36,13 @@ public class RatingAdapter extends FirestoreAdapter<RatingAdapter.ViewHolder> {
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.tv_rating_name)
+        @BindView(R.id.tvName)
         TextView tvRatingName;
-        @BindView(R.id.tv_rating_date)
+        @BindView(R.id.tvDate)
         TextView tvRatingDate;
-        @BindView(R.id.ratingbar_rating_dialog)
+        @BindView(R.id.mrbRating)
         MaterialRatingBar ratingbarRatingDialog;
-        @BindView(R.id.tv_rating_content)
+        @BindView(R.id.tvContent)
         TextView tvRatingContent;
 
 

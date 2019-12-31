@@ -45,19 +45,19 @@ public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHo
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.iv_restaurant_image)
+        @BindView(R.id.ivImage)
         ImageView ivRestaurantImage;
-        @BindView(R.id.tv_restaurant_name)
+        @BindView(R.id.tvName)
         TextView tvRestaurantName;
-        @BindView(R.id.tv_restaurant_price)
+        @BindView(R.id.tvPrice)
         TextView tvRestaurantPrice;
-        @BindView(R.id.ratingbar_restaurant)
+        @BindView(R.id.mrbRestaurant)
         MaterialRatingBar ratingbarRestaurant;
-        @BindView(R.id.tv_restaurant_num_rating)
+        @BindView(R.id.tvNumRating)
         TextView tvRestaurantNumRating;
-        @BindView(R.id.tv_restaurant_category)
+        @BindView(R.id.tvCategory)
         TextView tvRestaurantCategory;
-        @BindView(R.id.tv_restaurant_city)
+        @BindView(R.id.tvCity)
         TextView tvRestaurantCity;
 
         public ViewHolder(View itemView) {
