@@ -126,4 +126,6 @@
         <item>@string/sort_by_popularity</item>
         <item>@string/sort_by_price</item>
     </string-array>
+
+
 </resources>

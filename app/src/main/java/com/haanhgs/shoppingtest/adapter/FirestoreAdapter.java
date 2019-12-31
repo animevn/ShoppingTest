@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<VH> implements EventListener<QuerySnapshot> {
 
-    private static final String TAG = "Firestore Adapter";
+    private static final String TAG = "D.Firestore Adapter";
     private Query query;
     private ListenerRegistration registration;
     private final ArrayList<DocumentSnapshot> snapshots = new ArrayList<>();
@@ -81,7 +81,6 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
         snapshots.remove(change.getOldIndex());
         notifyItemRemoved(change.getOldIndex());
     }
-
 
     @Override
     public void onEvent(QuerySnapshot documentSnapshots,

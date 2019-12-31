@@ -76,7 +76,6 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
     }
 
     private void getIntentResult(){
-        // Get restaurant ID from extras
         String restaurantTemp = null;
         String uIdTemp = null;
         if (getIntent().getExtras() != null) {
@@ -146,28 +145,15 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
     }
 
     private Task<Void> addRating(final DocumentReference restaurantRef, final Rating rating) {
-        // Create reference for new rating, for use inside the transaction
-        final DocumentReference ratingRef = restaurantRef.collection("ratings")
-                .document();
-
-        // In a transaction, add the new rating and update the aggregate totals
+        final DocumentReference ratingRef = restaurantRef.collection("ratings").document();
         return firestore.runTransaction(transaction -> {
             Restaurant restaurant = transaction.get(restaurantRef).toObject(Restaurant.class);
-
-            // Compute new number of ratings
             if (restaurant != null) {
                 int newNumRatings = restaurant.getNumRatings() + 1;
-                // Compute new average rating
-                double oldRatingTotal = restaurant.getAvgRating() *
-                        restaurant.getNumRatings();
-                double newAvgRating = (oldRatingTotal + rating.getRating()) /
-                        newNumRatings;
-
-                // Set new restaurant info
+                double oldRatingTotal = restaurant.getAvgRating() * restaurant.getNumRatings();
+                double newAvgRating = (oldRatingTotal + rating.getRating()) / newNumRatings;
                 restaurant.setNumRatings(newNumRatings);
                 restaurant.setAvgRating(newAvgRating);
-
-                // Commit to Firestore
                 transaction.set(restaurantRef, restaurant);
                 transaction.set(ratingRef, rating);
             }
@@ -202,7 +188,7 @@ public class RestaurantDetailActivity extends AppCompatActivity implements
             hideKeyboard();
             rvRestaurant.smoothScrollToPosition(0);
         }).addOnFailureListener(this, e -> {
-            Log.w(TAG, "Add rating failed", e);
+            Log.d(TAG, "Add rating failed", e);
             hideKeyboard();
             Snackbar.make(findViewById(android.R.id.content), "Failed to add rating",
                     Snackbar.LENGTH_SHORT).show();

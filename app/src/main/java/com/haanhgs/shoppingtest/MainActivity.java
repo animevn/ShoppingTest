@@ -170,46 +170,35 @@ public class MainActivity extends AppCompatActivity implements FilterDialogFragm
     }
 
     private void onAddItemsClicked() {
-        // Get a reference to the restaurants collection
         CollectionReference restaurants = firestore
                 .collection("app").document(user.getUid()).collection("test");
         for (int i = 0; i < 10; i++) {
-            // Get a random Restaurant POJO
             Restaurant restaurant = RestaurantRepo.getRandom(this);
-            // Add a new document to the restaurants collection
             restaurants.add(restaurant);
         }
     }
 
     @Override
     public void onFilter(Filters filters) {
-        // Construct query basic query
         Query query = firestore.collection("app").document(user.getUid()).collection("test");
-        // Category (equality filter)
         if (filters.hasCategory()) {
             query = query.whereEqualTo("category", filters.getCategory());
         }
-        // City (equality filter)
         if (filters.hasCity()) {
             query = query.whereEqualTo("city", filters.getCity());
         }
-        // Price (equality filter)
         if (filters.hasPrice()) {
             query = query.whereEqualTo("price", filters.getPrice());
         }
-        // Sort by (orderBy with direction)
         if (filters.hasSortBy()) {
             query = query.orderBy(filters.getSortBy(), filters.getSortDirection());
         }
-        // Limit items
+
         query = query.limit(LIMIT);
-        // Update the query
         this.query = query;
         adapter.setQuery(query);
-        // Set header
         tvCurrentFilter.setText(Html.fromHtml(filters.getSearchDescription(this)));
         tvCurrentSortBy.setText(filters.getOrderDescription(this));
-        // Save filters
         viewModel.setFilters(filters);
     }
 
@@ -227,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements FilterDialogFragm
                 break;
             case R.id.menu_sign_out:
                 AuthUI.getInstance().signOut(this);
-                user = null;
+//                user = null;
                 viewModel.setSignIn(false);
                 onStart();
                 break;
@@ -235,11 +224,11 @@ public class MainActivity extends AppCompatActivity implements FilterDialogFragm
         return super.onOptionsItemSelected(item);
     }
 
-    public void onFilterClicked() {
+    public void onButtonFilter() {
         filterDialog.show(getSupportFragmentManager(), FilterDialogFragment.TAG);
     }
 
-    public void onClearFilterClicked() {
+    public void onButtonClear() {
         filterDialog.resetFilters();
         onFilter(Filters.getDefault());
     }
@@ -248,10 +237,10 @@ public class MainActivity extends AppCompatActivity implements FilterDialogFragm
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bnFilter:
-                onClearFilterClicked();
+                onButtonClear();
                 break;
             case R.id.cvBar:
-                onFilterClicked();
+                onButtonFilter();
                 break;
         }
     }

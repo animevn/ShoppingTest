@@ -54,6 +54,7 @@ public class RestaurantRepo {
 
         // Categories (because first elemnt is 'Any', so take from index 1)
         String[] categories = context.getResources().getStringArray(R.array.categories);
+
         categories = Arrays.copyOfRange(categories, 1, categories.length);
         int[] prices = new int[]{1, 2, 3};
         restaurant.setName(getRandomName(random));
