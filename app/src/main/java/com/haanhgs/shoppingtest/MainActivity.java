@@ -27,7 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements FilterDialogFragm
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         initToolbar();
-        viewModel = ViewModelProviders.of(this).get(AppViewModel.class);
+        viewModel = new ViewModelProvider(this).get(AppViewModel.class);
         FirebaseFirestore.setLoggingEnabled(true);
         initFirestore();
         initRecyclerView();
@@ -216,7 +216,6 @@ public class MainActivity extends AppCompatActivity implements FilterDialogFragm
                 break;
             case R.id.menu_sign_out:
                 AuthUI.getInstance().signOut(this);
-//                user = null;
                 viewModel.setSignIn(false);
                 onStart();
                 break;

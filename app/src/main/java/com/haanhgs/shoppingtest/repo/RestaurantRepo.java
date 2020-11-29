@@ -13,8 +13,8 @@ import java.util.concurrent.TimeUnit;
 public class RestaurantRepo {
 
     private static final String TAG = "RestaurantRepo";
-    private static final ThreadPoolExecutor EXECUTOR = new ThreadPoolExecutor(2, 4, 60,
-            TimeUnit.SECONDS, new LinkedBlockingQueue<>());
+//    private static final ThreadPoolExecutor EXECUTOR = new ThreadPoolExecutor(2, 4, 60,
+//            TimeUnit.SECONDS, new LinkedBlockingQueue<>());
 
     private static final String RESTAURANT_URL_FMT =
             "https://storage.googleapis.com/firestorequickstarts.appspot.com/food_%d.png";
